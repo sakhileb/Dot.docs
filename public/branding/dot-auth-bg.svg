@@ -1,0 +1,43 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#061A2E"/>
+  <rect width="1600" height="1200" fill="url(#paint0_linear_1_2)"/>
+  <g opacity="0.55" filter="url(#filter0_f_1_2)">
+    <circle cx="1276" cy="260" r="236" fill="#2F89D0"/>
+  </g>
+  <g opacity="0.65" filter="url(#filter1_f_1_2)">
+    <circle cx="356" cy="324" r="314" fill="#F5C82C"/>
+  </g>
+  <g opacity="0.38">
+    <path d="M1017 154C1086.61 86.0078 1198.75 86.0078 1268.35 154L1468 349.081C1537.6 417.074 1537.6 526.926 1468 594.919L1268.35 790C1198.75 857.992 1086.61 857.992 1017 790C947.398 722.008 947.398 612.155 1017 544.163L1126.71 437L1017 349.837C947.398 281.845 947.398 222.992 1017 154Z" fill="#3B90D4"/>
+  </g>
+  <g opacity="0.16">
+    <circle cx="1333" cy="999" r="255" stroke="#D7EBFF" stroke-width="2"/>
+    <circle cx="1333" cy="999" r="198" stroke="#D7EBFF" stroke-width="2"/>
+    <circle cx="1333" cy="999" r="141" stroke="#D7EBFF" stroke-width="2"/>
+  </g>
+  <g opacity="0.2">
+    <path d="M-5 1006C197.638 915.083 353.569 911.635 462.792 995.656C572.015 1079.68 707.751 1087.79 869.999 1020" stroke="#F5C82C" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 14"/>
+  </g>
+  <g opacity="0.9">
+    <circle cx="493" cy="884" r="10" fill="#F5C82C"/>
+    <circle cx="1042" cy="923" r="8" fill="#D5EBFF"/>
+    <circle cx="1132" cy="864" r="14" fill="#F5C82C"/>
+  </g>
+  <defs>
+    <filter id="filter0_f_1_2" x="780" y="-236" width="992" height="992" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="130" result="effect1_foregroundBlur_1_2"/>
+    </filter>
+    <filter id="filter1_f_1_2" x="-218" y="-250" width="1148" height="1148" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="130" result="effect1_foregroundBlur_1_2"/>
+    </filter>
+    <linearGradient id="paint0_linear_1_2" x1="138" y1="89" x2="1341" y2="1090" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071E36"/>
+      <stop offset="0.58" stop-color="#0A2342"/>
+      <stop offset="1" stop-color="#061522"/>
+    </linearGradient>
+  </defs>
+</svg>

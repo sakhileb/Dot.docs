@@ -1,0 +1,370 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+@import "quill/dist/quill.snow.css";
+@import "mobile.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+}
+
+.marketing-shell {
+    background-color: #071a2f;
+    background-image:
+        linear-gradient(180deg, rgba(6, 20, 33, 0.16) 0%, rgba(6, 20, 33, 0.72) 100%),
+        url('/branding/dot-auth-bg.svg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.marketing-grid {
+    position: relative;
+}
+
+.marketing-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 78%);
+    pointer-events: none;
+}
+
+.hero-card {
+    backdrop-filter: blur(18px);
+    background: linear-gradient(180deg, rgba(7, 28, 49, 0.76) 0%, rgba(6, 20, 34, 0.86) 100%);
+}
+
+.hero-chip {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.brand-wordmark {
+    font-size: clamp(2rem, 5vw, 4.75rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+}
+
+.brand-wordmark .gold {
+    color: #f7cd33;
+}
+
+.brand-wordmark .blue {
+    color: #49a3ea;
+}
+
+.auth-panel {
+    backdrop-filter: blur(24px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(246, 249, 252, 0.88) 100%);
+    box-shadow: 0 24px 80px rgba(5, 18, 31, 0.32);
+}
+
+.dark .auth-panel {
+    background: linear-gradient(180deg, rgba(7, 20, 34, 0.88) 0%, rgba(10, 25, 42, 0.84) 100%);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.auth-input {
+    border-radius: 1rem;
+    border: 1px solid rgba(21, 72, 120, 0.18);
+    background: rgba(255, 255, 255, 0.78);
+    padding: 0.9rem 1rem;
+    color: #0d2238;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.auth-input:focus {
+    border-color: rgba(56, 139, 210, 0.85);
+    box-shadow: 0 0 0 4px rgba(73, 163, 234, 0.15);
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.dark .auth-input {
+    border-color: rgba(116, 179, 230, 0.24);
+    background: rgba(11, 32, 54, 0.78);
+    color: #e9f5ff;
+}
+
+.dark .auth-input:focus {
+    border-color: rgba(110, 188, 245, 0.9);
+    box-shadow: 0 0 0 4px rgba(73, 163, 234, 0.18);
+    background: rgba(10, 28, 46, 0.96);
+}
+
+.auth-label {
+    color: #153859;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dark .auth-label {
+    color: #d8ecff;
+}
+
+.auth-button {
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #f7c92e 0%, #f1b719 100%);
+    color: #0b1d31;
+    box-shadow: 0 18px 36px rgba(247, 201, 46, 0.28);
+}
+
+.auth-button:hover,
+.auth-button:focus {
+    background: linear-gradient(135deg, #ffd64f 0%, #f7c92e 100%);
+}
+
+.auth-link {
+    color: #2a80c7;
+    transition: color 0.15s ease;
+}
+
+.auth-link:hover,
+.auth-link:focus {
+    color: #1668ac;
+}
+
+.dark .auth-link {
+    color: #7bc5ff;
+}
+
+.dark .auth-link:hover,
+.dark .auth-link:focus {
+    color: #b0ddff;
+}
+
+.auth-checkbox {
+    border-radius: 0.5rem;
+    border-color: rgba(21, 72, 120, 0.24);
+    color: #2a80c7;
+}
+
+.dark .auth-checkbox {
+    border-color: rgba(116, 179, 230, 0.3);
+    background-color: rgba(11, 32, 54, 0.9);
+    color: #7bc5ff;
+}
+
+.app-shell {
+    background:
+        radial-gradient(circle at top left, rgba(245, 200, 44, 0.15), transparent 28%),
+        radial-gradient(circle at top right, rgba(47, 137, 208, 0.18), transparent 24%),
+        linear-gradient(180deg, #eef5fb 0%, #f8fbff 34%, #eff7ff 100%);
+}
+
+.dark .app-shell {
+    background:
+        radial-gradient(circle at top left, rgba(245, 200, 44, 0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(47, 137, 208, 0.16), transparent 24%),
+        linear-gradient(180deg, #071728 0%, #081d31 32%, #06111d 100%);
+}
+
+.app-topbar {
+    backdrop-filter: blur(18px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(245, 250, 255, 0.84) 100%);
+}
+
+.dark .app-topbar {
+    background: linear-gradient(180deg, rgba(7, 20, 34, 0.9) 0%, rgba(6, 17, 29, 0.86) 100%);
+}
+
+.app-card {
+    backdrop-filter: blur(18px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 250, 253, 0.88) 100%);
+    box-shadow: 0 18px 50px rgba(6, 20, 33, 0.08);
+}
+
+.dark .app-card {
+    background: linear-gradient(180deg, rgba(9, 24, 39, 0.88) 0%, rgba(7, 18, 30, 0.92) 100%);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+}
+
+.app-nav-link {
+    border-radius: 9999px;
+    padding: 0.7rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+
+.app-nav-link-active {
+    background: linear-gradient(135deg, #2a80c7 0%, #49a3ea 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(73, 163, 234, 0.24);
+}
+
+.app-nav-link-inactive {
+    color: #325879;
+}
+
+.app-nav-link-inactive:hover,
+.app-nav-link-inactive:focus {
+    background: rgba(73, 163, 234, 0.1);
+    color: #163d61;
+}
+
+.dark .app-nav-link-inactive {
+    color: rgba(216, 236, 255, 0.74);
+}
+
+.dark .app-nav-link-inactive:hover,
+.dark .app-nav-link-inactive:focus {
+    background: rgba(73, 163, 234, 0.14);
+    color: #ffffff;
+}
+
+.app-pill-button {
+    border-radius: 9999px;
+    border: 1px solid rgba(39, 97, 149, 0.12);
+    background: rgba(255, 255, 255, 0.74);
+    color: #163d61;
+    transition: all 0.15s ease;
+}
+
+.app-pill-button:hover,
+.app-pill-button:focus {
+    background: rgba(73, 163, 234, 0.12);
+    border-color: rgba(73, 163, 234, 0.34);
+}
+
+.dark .app-pill-button {
+    border-color: rgba(116, 179, 230, 0.18);
+    background: rgba(11, 30, 50, 0.7);
+    color: #dbedff;
+}
+
+.dark .app-pill-button:hover,
+.dark .app-pill-button:focus {
+    background: rgba(73, 163, 234, 0.16);
+    border-color: rgba(116, 179, 230, 0.3);
+}
+
+.brand-section-title {
+    color: #102d48;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.dark .brand-section-title {
+    color: rgba(216, 236, 255, 0.76);
+}
+
+.settings-panel {
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(18px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 250, 253, 0.88) 100%);
+    box-shadow: 0 16px 44px rgba(6, 20, 33, 0.08);
+}
+
+.dark .settings-panel {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(9, 24, 39, 0.88) 0%, rgba(7, 18, 30, 0.92) 100%);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
+}
+
+.settings-divider {
+    border-top: 1px solid rgba(130, 180, 220, 0.3);
+}
+
+.dark .settings-divider {
+    border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .ql-toolbar.ql-snow,
+.dark .ql-container.ql-snow {
+    border-color: rgb(75 85 99 / 1);
+}
+
+.dark .ql-toolbar.ql-snow .ql-formats button,
+.dark .ql-toolbar.ql-snow .ql-formats select {
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-toolbar .ql-stroke {
+    stroke: rgb(209 213 219 / 1);
+}
+
+.dark .ql-toolbar .ql-fill {
+    fill: rgb(209 213 219 / 1);
+}
+
+.dark .ql-toolbar .ql-picker-label {
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-picker,
+.dark .ql-picker-label,
+.dark .ql-picker-item {
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-picker-options {
+    background-color: rgb(31 41 55 / 1);
+    border-color: rgb(75 85 99 / 1);
+}
+
+.dark .ql-picker-item {
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-picker-item:hover,
+.dark .ql-picker-item.ql-selected {
+    color: rgb(243 244 246 / 1);
+    background-color: rgb(55 65 81 / 1);
+}
+
+.dark .ql-editor {
+    color: rgb(243 244 246 / 1);
+    background-color: rgb(17 24 39 / 1);
+}
+
+.dark .ql-editor.ql-blank::before {
+    color: rgb(107 114 128 / 1);
+}
+
+.dark .ql-editor code,
+.dark .ql-editor pre {
+    background-color: rgb(31 41 55 / 1);
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-editor blockquote {
+    border-color: rgb(107 114 128 / 1);
+    color: rgb(209 213 219 / 1);
+}
+
+.dark .ql-editor table {
+    border-color: rgb(75 85 99 / 1);
+}
+
+.dark .ql-editor table th,
+.dark .ql-editor table td {
+    border-color: rgb(75 85 99 / 1);
+    background-color: rgb(31 41 55 / 1);
+}
+
+.dark .ql-editor table tbody tr {
+    background-color: rgb(23 31 43 / 1);
+}
+
+.dark .ql-editor ul > li::before,
+.dark .ql-editor ol > li::before {
+    color: rgb(107 114 128 / 1);
+}
