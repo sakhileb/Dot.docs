@@ -4,7 +4,7 @@
 
         <div>
             <x-label for="templateContent" value="Template Content" />
-            <textarea id="templateContent" wire:model="templateContent" rows="14" class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100" placeholder="Hello @{{name}}, your renewal date is @{{renewal_date}}."></textarea>
+            <textarea id="templateContent" wire:model="templateContent" rows="14" class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100" placeholder="Hello &#123;&#123;name&#125;&#125;, your renewal date is &#123;&#123;renewal_date&#125;&#125;."></textarea>
             <x-input-error for="templateContent" class="mt-1" />
         </div>
 
@@ -12,7 +12,7 @@
             <x-label for="recipientJson" value="Recipients JSON" />
             <textarea id="recipientJson" wire:model="recipientJson" rows="10" class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100" placeholder='[{"name":"Jane Doe","renewal_date":"2026-05-01"}]'></textarea>
             <x-input-error for="recipientJson" class="mt-1" />
-            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Use a JSON array of recipients. Nested keys are supported via dot notation such as @{{company.name}}.</p>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Use a JSON array of recipients. Nested keys are supported via dot notation such as &#123;&#123;company.name&#125;&#125;.</p>
         </div>
 
         <div class="flex gap-3">
