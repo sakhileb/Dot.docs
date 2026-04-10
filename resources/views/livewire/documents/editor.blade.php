@@ -75,12 +75,38 @@
             clearInterval(this.heartbeatInterval);
             if (this.echo) this.echo.leave();
             if (this.editor) this.editor.destroy();
+        },
+
+        // Apply AI result to the editor
+        applyAiContent(type, content) {
+            if (!this.editor) return;
+            if (type === 'replace') {
+                this.editor.commands.setContent(content, true);
+                @this.saveContent(content);
+            } else {
+                this.editor.commands.focus('end');
+                this.editor.commands.insertContent(content);
+                const html = this.editor.getHTML();
+                @this.saveContent(html);
+            }
         }
     }"
     x-init="init()"
     x-destroy="destroy()"
+    @ai-apply.window="applyAiContent('replace', $event.detail.content)"
+    @keydown.ctrl.k.window.prevent="$dispatch('open-ai-palette')"
+    @keydown.meta.k.window.prevent="$dispatch('open-ai-palette')"
     class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900"
 >
+    {{-- AI Components (outside toolbar, at root level) --}}
+    @livewire('documents.ai-assistant', ['document' => $document], key('ai-assistant'))
+    @livewire('documents.ai-chat', ['document' => $document], key('ai-chat'))
+
+    {{-- Listen for Ctrl+K to open AI palette --}}
+    <div x-data
+         @open-ai-palette.window="$wire.dispatchTo('documents.ai-assistant', 'open-palette')"
+         class="hidden"></div>
+
     {{-- Toolbar --}}
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center gap-1 flex-wrap">
         {{-- Title in toolbar --}}
@@ -186,6 +212,52 @@
                 v{{ $document->version }}
                 · edited {{ $document->updated_at->diffForHumans() }}
             </span>
+
+            {{-- AI Quick Actions --}}
+            <span class="w-px h-5 bg-gray-300 dark:bg-gray-600"></span>
+            <button @click="$dispatch('open-ai-palette')"
+                    class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium flex items-center gap-1 px-1.5 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
+                    title="AI Command Palette (Ctrl+K)">
+                ✨ AI <kbd class="text-[9px] bg-gray-100 dark:bg-gray-700 rounded px-1 ml-0.5">⌘K</kbd>
+            </button>
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open"
+                        class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 px-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30">
+                    ▾
+                </button>
+                <div x-show="open" @click.outside="open = false" x-cloak
+                     class="absolute right-0 mt-1 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50 py-1 text-xs">
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'summarize' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        📝 Summarize
+                    </button>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'grammar' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        ✅ Fix Grammar
+                    </button>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'continue' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        ✍️ Continue Writing
+                    </button>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'outline' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        🗂️ Generate Outline
+                    </button>
+                    <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'tone', param: 'formal' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        🎩 Formal Tone
+                    </button>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'tone', param: 'casual' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        😊 Casual Tone
+                    </button>
+                    <button @click="open=false; $wire.dispatchTo('documents.ai-assistant', 'ai-action', { action: 'tone', param: 'concise' })"
+                            class="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        ⚡ Concise Tone
+                    </button>
+                </div>
+            </div>
 
             <a href="{{ route('documents.share', $document->uuid) }}"
                class="text-xs text-indigo-600 hover:underline">Share</a>

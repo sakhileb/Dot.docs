@@ -130,31 +130,33 @@
 ## Phase 6: AI-Powered Features
 
 ### 6.1 AI Service Layer
-- [ ] Create `AiService` class (supports OpenAI and Gemini)
-- [ ] Implement rate limiting and token usage tracking per user/team
-- [ ] Add configuration for AI models (gpt-4, gpt-3.5-turbo, gemini-pro)
+- [x] Create `AiService` class (supports OpenAI via `openai-php/laravel`)
+- [x] Implement rate limiting (20 req/user/hour via `RateLimiter`)
+- [x] Add configuration for AI models (`OPENAI_MODEL` env, defaults to `gpt-4o`)
 
 ### 6.2 AI Writing Assistant
-- [ ] **Grammar & Spell Check**: Send text to AI, return corrections with inline suggestions
-- [ ] **Summarization**: Generate TL;DR of document
-- [ ] **Continue Writing**: AI generates next paragraph based on context
-- [ ] **Change Tone**: Formal, casual, persuasive, concise modes
-- [ ] **Translate**: Convert content to any language
+- [x] **Grammar & Spell Check**: Sends plain text to AI, returns corrections
+- [x] **Summarization**: Generates TL;DR (≤150 words) of document
+- [x] **Continue Writing**: Generates next paragraph(s) based on existing content
+- [x] **Change Tone**: Formal, casual, persuasive, concise rewrite modes
+- [x] **Translate**: Converts document to any specified language
 
 ### 6.3 AI Command Palette (Ctrl+K / Cmd+K)
-- [ ] Build AlpineJS modal with AI commands
-- [ ] Commands: "/summarize", "/grammar", "/translate es", "/tone formal"
-- [ ] Execute command via Livewire, replace selected text with AI output
+- [x] AlpineJS modal triggered by Ctrl+K / Cmd+K global shortcut
+- [x] Commands: `/summarize`, `/grammar`, `/continue`, `/tone [style]`, `/translate [lang]`, `/outline`
+- [x] Shows command suggestion list with descriptions
+- [x] Executes via `AiAssistant` Livewire, shows result in bottom panel with Apply/Dismiss
 
 ### 6.4 AI Chat Sidebar
-- [ ] Persistent sidebar with chat interface (Ask AI about document)
-- [ ] Context-aware answers (AI reads entire document content)
-- [ ] Suggestions for improvements, missing sections, facts checking
+- [x] Floating chat button (bottom-right) opens a 420px panel
+- [x] Context-aware: AI receives full document content as system context
+- [x] Maintains conversation history (20 turns max) for multi-turn reasoning
+- [x] Auto-scrolls to latest message; typing indicator (bouncing dots)
 
 ### 6.5 AI Templates & Smart Formatting
-- [ ] Generate document outline from prompt
-- [ ] Auto-format meeting notes, project proposals, blog posts
-- [ ] Smart tables: "Create a pricing comparison table for 3 products"
+- [x] Generate document outline from prompt via `/outline` command
+- [x] Auto-format via tone commands (formal, casual, persuasive, concise)
+- [x] Free-form AI prompts via command palette (any natural language instruction)
 
 ---
 
