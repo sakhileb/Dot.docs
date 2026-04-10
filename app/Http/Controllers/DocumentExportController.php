@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use League\HTMLToMarkdown\HtmlConverter;
 use PhpOffice\PhpWord\PhpWord;
@@ -16,6 +17,13 @@ class DocumentExportController extends Controller
     {
         $document = Document::where('uuid', $uuid)->firstOrFail();
         $this->authorize('view', $document);
+
+        // Rate limit: 10 exports per user per hour
+        $key = 'export:' . auth()->id();
+        if (! RateLimiter::attempt($key, 10, fn () => true, 3600)) {
+            $seconds = RateLimiter::availableIn($key);
+            abort(429, "Export limit reached. Try again in {$seconds} seconds.");
+        }
 
         $safeTitle = Str::slug($document->title ?: 'document');
 

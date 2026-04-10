@@ -11,10 +11,12 @@ use OpenAI\Laravel\Facades\OpenAI;
 class AiService
 {
     private string $model;
+    private HtmlSanitizer $sanitizer;
 
     public function __construct()
     {
-        $this->model = config('openai.model', 'gpt-4o');
+        $this->model     = config('openai.model', 'gpt-4o');
+        $this->sanitizer = app(HtmlSanitizer::class);
     }
 
     /**
@@ -31,7 +33,7 @@ class AiService
      */
     public function grammarCheck(string $html): string
     {
-        $text = strip_tags($html);
+        $text = $this->sanitizer->toPlainText($html);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -50,7 +52,7 @@ class AiService
      */
     public function summarize(string $html, int $maxWords = 150): string
     {
-        $text = strip_tags($html);
+        $text = $this->sanitizer->toPlainText($html);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -69,7 +71,7 @@ class AiService
      */
     public function continueWriting(string $html): string
     {
-        $text = strip_tags($html);
+        $text = $this->sanitizer->toPlainText($html);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -89,7 +91,7 @@ class AiService
      */
     public function changeTone(string $html, string $tone = 'formal'): string
     {
-        $text = strip_tags($html);
+        $text = $this->sanitizer->toPlainText($html);
         $tones = ['formal', 'casual', 'persuasive', 'concise'];
         $tone  = in_array($tone, $tones) ? $tone : 'formal';
 
@@ -110,7 +112,7 @@ class AiService
      */
     public function translate(string $html, string $language = 'Spanish'): string
     {
-        $text = strip_tags($html);
+        $text = $this->sanitizer->toPlainText($html);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -167,7 +169,7 @@ class AiService
      */
     public function generateOutline(string $promptOrHtml): string
     {
-        $text = strip_tags($promptOrHtml);
+        $text = $this->sanitizer->toPlainText($promptOrHtml);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -186,7 +188,7 @@ class AiService
      */
     public function freePrompt(string $prompt, string $documentHtml): string
     {
-        $text = strip_tags($documentHtml);
+        $text = $this->sanitizer->toPlainText($documentHtml);
 
         $response = OpenAI::chat()->create([
             'model'    => $this->model,
@@ -206,7 +208,7 @@ class AiService
      */
     public function chat(string $message, string $documentHtml, array $history = []): string
     {
-        $docText = strip_tags($documentHtml);
+        $docText = $this->sanitizer->toPlainText($documentHtml);
         $systemPrompt = "You are an AI assistant embedded in Dot.docs, a document editor. The user is asking questions or requesting help about the following document:\n\n{$docText}\n\nBe helpful, accurate, and concise.";
 
         $messages = [['role' => 'system', 'content' => $systemPrompt]];

@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\User;
 use App\Notifications\CommentPostedNotification;
 use App\Notifications\MentionedInCommentNotification;
+use App\Services\HtmlSanitizer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -39,10 +40,12 @@ class CommentThread extends Component
         $this->authorize('view', $this->document);
         $this->validate(['newComment' => 'required|string|max:2000']);
 
+        $sanitizer = app(HtmlSanitizer::class);
+
         $comment = Comment::create([
             'document_id' => $this->document->id,
             'user_id'     => auth()->id(),
-            'content'     => $this->newComment,
+            'content'     => $sanitizer->clean($this->newComment),
         ]);
 
         $comment->load('user');
@@ -62,10 +65,12 @@ class CommentThread extends Component
         $parent = Comment::where('document_id', $this->document->id)
             ->findOrFail($this->replyingTo);
 
+        $sanitizer = app(HtmlSanitizer::class);
+
         $comment = Comment::create([
             'document_id' => $this->document->id,
             'user_id'     => auth()->id(),
-            'content'     => $this->replyContent,
+            'content'     => $sanitizer->clean($this->replyContent),
             'parent_id'   => $parent->id,
         ]);
 

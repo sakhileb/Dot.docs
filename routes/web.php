@@ -14,13 +14,42 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Public shared document view
+// Public shared document view (with optional password & expiry enforcement)
 Route::get('/shared/{uuid}', function (string $uuid) {
     $document = \App\Models\Document::where('uuid', $uuid)
         ->where('is_public', true)
         ->firstOrFail();
+
+    // Check expiry
+    if ($document->share_expires_at && $document->share_expires_at->isPast()) {
+        abort(410, 'This share link has expired.');
+    }
+
+    // Check password
+    if ($document->share_password) {
+        return view('documents.shared-password', compact('document'));
+    }
+
     return view('documents.shared', compact('document'));
 })->name('documents.shared');
+
+Route::post('/shared/{uuid}', function (string $uuid, \Illuminate\Http\Request $request) {
+    $document = \App\Models\Document::where('uuid', $uuid)
+        ->where('is_public', true)
+        ->firstOrFail();
+
+    if ($document->share_expires_at && $document->share_expires_at->isPast()) {
+        abort(410, 'This share link has expired.');
+    }
+
+    $request->validate(['password' => 'required|string']);
+
+    if (! \Illuminate\Support\Facades\Hash::check($request->password, $document->share_password)) {
+        return back()->withErrors(['password' => 'Incorrect password.']);
+    }
+
+    return view('documents.shared', compact('document'));
+})->name('documents.shared.unlock');
 
 Route::middleware([
     'auth:sanctum',

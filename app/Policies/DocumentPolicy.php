@@ -110,8 +110,42 @@ class DocumentPolicy
     {
         return $document->owner_id === $user->id;
     }
-}
 
     /**
-     * Determine whether the user can view any models.
+     * Manage: change share settings, password, expiration (owner + admins only).
      */
+    public function manage(User $user, Document $document): bool
+    {
+        if ($document->owner_id === $user->id) {
+            return true;
+        }
+
+        if ($document->team_id && $user->belongsToTeam($document->team)) {
+            $role = $user->teamRole($document->team);
+            return $role && $role->key === 'admin';
+        }
+
+        return false;
+    }
+
+    /**
+     * Share: invite collaborators (owner, admin, editors with share permission).
+     */
+    public function share(User $user, Document $document): bool
+    {
+        if ($document->owner_id === $user->id) {
+            return true;
+        }
+
+        if ($document->team_id && $user->belongsToTeam($document->team)) {
+            $role = $user->teamRole($document->team);
+            return $role && in_array($role->key, ['admin', 'editor']);
+        }
+
+        return $document->collaborators()
+            ->where('user_id', $user->id)
+            ->whereIn('role', ['admin', 'editor'])
+            ->exists();
+    }
+}
+

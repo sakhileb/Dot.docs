@@ -7,6 +7,7 @@ use App\Events\UserJoinedDocument;
 use App\Events\UserLeftDocument;
 use App\Models\AiSuggestion;
 use App\Models\Document;
+use App\Services\HtmlSanitizer;
 use App\Services\PresenceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
@@ -50,6 +51,8 @@ class Editor extends Component
     public function saveContent(string $content): void
     {
         $this->authorize('update', $this->document);
+
+        $content = app(HtmlSanitizer::class)->clean($content);
 
         if ($this->suggestionMode) {
             // Store as a suggestion instead of saving directly

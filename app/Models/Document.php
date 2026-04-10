@@ -20,10 +20,13 @@ class Document extends Model
         'team_id',
         'version',
         'is_public',
+        'share_password',
+        'share_expires_at',
     ];
 
     protected $casts = [
-        'is_public' => 'boolean',
+        'is_public'        => 'boolean',
+        'share_expires_at' => 'datetime',
     ];
 
     public function owner(): BelongsTo
@@ -75,6 +78,27 @@ class Document extends Model
     public static function findByUuidCached(string $uuid): ?self
     {
         return Cache::remember("doc.record.{$uuid}", 300, fn () => static::where('uuid', $uuid)->first());
+    }
+
+    /**
+     * Check whether a public share link is still accessible (not expired).
+     * Optionally validate a password if one is set.
+     */
+    public function isShareAccessible(?string $password = null): bool
+    {
+        if (! $this->is_public) {
+            return false;
+        }
+
+        if ($this->share_expires_at && $this->share_expires_at->isPast()) {
+            return false;
+        }
+
+        if ($this->share_password) {
+            return $password && \Illuminate\Support\Facades\Hash::check($password, $this->share_password);
+        }
+
+        return true;
     }
 }
 

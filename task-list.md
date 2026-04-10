@@ -204,18 +204,18 @@
 ## Phase 9: Security & Permissions
 
 ### 9.1 Authorization (Policies)
-- [ ] Create `DocumentPolicy` (view, update, delete, manage, share)
-- [ ] Team-based access (owner, admin, editor, viewer)
-- [ ] Public link access with password/expiration options
+- [x] Create `DocumentPolicy` (view, update, delete, manage, share)
+- [x] Team-based access (owner, admin, editor, viewer)
+- [x] Public link access with password/expiration options
 
 ### 9.2 Input Sanitization
-- [ ] Sanitize HTML content (HTMLPurifier or Laravel's `clean()`)
-- [ ] Prevent XSS in comments and AI outputs
-- [ ] Validate all AI API inputs (length limits, rate limiting per user)
+- [x] Sanitize HTML content (HTMLPurifier or Laravel's `clean()`)
+- [x] Prevent XSS in comments and AI outputs
+- [x] Validate all AI API inputs (length limits, rate limiting per user)
 
 ### 9.3 API Rate Limiting
-- [ ] Apply rate limiter for AI endpoints (`20 per minute` per user)
-- [ ] Limit document export to `10 per hour`
+- [x] Apply rate limiter for AI endpoints (`20 per minute` per user)
+- [x] Limit document export to `10 per hour`
 
 ---
 

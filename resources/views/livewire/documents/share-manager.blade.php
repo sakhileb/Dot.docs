@@ -24,6 +24,50 @@
                 <button onclick="navigator.clipboard.writeText('{{ $publicLink }}')"
                         class="text-xs text-indigo-600 hover:underline whitespace-nowrap">Copy</button>
             </div>
+
+            {{-- Share link options: password + expiry --}}
+            <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4 space-y-3">
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Link Protection</h3>
+
+                @if(session('status'))
+                    <p class="text-green-600 text-xs">{{ session('status') }}</p>
+                @endif
+
+                <form wire:submit="saveShareOptions" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Password
+                            @if($showPasswordSet)
+                                <span class="ml-1 text-amber-600">(currently set —
+                                    <button type="button" wire:click="clearPassword" class="underline">remove</button>)
+                                </span>
+                            @endif
+                        </label>
+                        <input wire:model="sharePassword" type="password"
+                               placeholder="{{ $showPasswordSet ? 'Enter new password to change' : 'Leave blank for no password' }}"
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                        @error('sharePassword') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Expires at</label>
+                        <input wire:model="shareExpiresAt" type="datetime-local"
+                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                        @error('shareExpiresAt') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @if($document->share_expires_at)
+                            <p class="text-xs text-gray-400 mt-1">
+                                Expires {{ $document->share_expires_at->diffForHumans() }}
+                                @if($document->share_expires_at->isPast()) <span class="text-red-500 font-medium">(expired)</span> @endif
+                            </p>
+                        @endif
+                    </div>
+
+                    <button type="submit"
+                            class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition">
+                        Save link settings
+                    </button>
+                </form>
+            </div>
         @endif
     </div>
 
