@@ -1,287 +1,266 @@
-## Phase 1: Project Setup & Foundation
+# Task List: Dot.Docs AI-Powered Document Creation Platform
 
-### 1.1 Initial Configuration
-- [x] Install Laravel with Jetstream (Livewire stack, Teams support)
-- [x] Configure database (SQLite)
-- [x] Set up Laravel Sanctum for API authentication
-- [x] Configure team-based permissions & roles
-- [x] Set up queue system (Redis/database) for AI processing
-- [x] Configure file storage (S3/local) for documents
-- [x] Set up environment variables for AI services (OpenAI/Anthropic)
+## Tech Stack
+- **Backend**: Laravel with Jetstream (Livewire stack, Teams support)
+- **Database**: MySQL/PostgreSQL + Redis for caching/sessions/real-time
+- **Frontend**: Tailwind CSS, AlpineJS, Livewire, Turbo, Lodash
+- **AI**: OpenAI API / Gemini API (for summarization, grammar, suggestions)
+- **Real-time**: Laravel Echo + WebSockets (Laravel Reverb / Pusher)
 
-### 1.2 Frontend Setup
-- [x] Install and configure Tailwind CSS plugins (forms, typography)
-- [x] Set up Livewire components structure
-- [x] Configure Alpine.js for interactive UI elements
-- [x] Install font libraries (Google Fonts, Font Awesome)
-- [x] Set up dark mode support
+---
 
-## Phase 2: Document Management Core
+## Phase 1: Environment Setup
 
-### 2.1 Database Models & Migrations
-- [x] Create `documents` table (title, content, version, team_id, user_id)
-- [x] Create `document_versions` table for version history
-- [x] Create `document_shares` table (permissions, access links)
-- [x] Create `document_comments` table (resolved threads)
-- [x] Create `ai_suggestions` table (prompts, responses, status)
-- [x] Create `templates` table (pre-built templates, categories)
-- [x] Create `document_export_jobs` table (export formats, status)
+### 1.1 Install Laravel & Jetstream
+- [ ] Create new Laravel project (`composer create-project laravel/laravel document-platform`)
+- [ ] Install Jetstream with Livewire stack and Teams support (`composer require laravel/jetstream`)
+- [ ] Run `php artisan jetstream:install livewire --teams`
+- [ ] Install NPM dependencies (`npm install`)
 
-### 2.2 Document CRUD Operations
-- [x] Create Document Livewire component with datatable
-- [x] Implement document listing (grid/list view toggle)
-- [x] Add document search & filter (by team, date, status)
-- [x] Create document creation wizard (blank, template, AI)
-- [x] Implement document deletion (soft delete + restore)
-- [x] Add document archiving functionality
-- [x] Create document duplication feature
+### 1.2 Configure Environment (.env)
+- [ ] Set database connection (MySQL/PostgreSQL)
+- [ ] Set `SESSION_DRIVER=redis`
+- [ ] Set `CACHE_DRIVER=redis`
+- [ ] Configure Redis connection (host, port, password)
+- [ ] Set `BROADCAST_DRIVER=reverb` (or pusher)
+- [ ] Add AI API keys (`OPENAI_API_KEY`, `GEMINI_API_KEY`)
 
-## Phase 3: Rich Text Editor (Google Docs-like)
+### 1.3 Frontend Tooling
+- [ ] Install and configure Tailwind CSS (`npm install -D tailwindcss postcss autoprefixer`)
+- [ ] Configure Laravel Mix or Vite (`vite.config.js`)
+- [ ] Install required NPM packages:
+  ```bash
+  npm install alpinejs livewire lodash @hotwired/turbo
+  ```
+- [ ] Compile assets (`npm run build` or `npm run dev`)
 
-### 3.1 Editor Integration
-- [x] Integrate TipTap or Quill.js editor with Livewire
-- [x] Implement text formatting (bold, italic, underline, strikethrough)
-- [x] Add heading styles (H1-H6)
-- [x] Implement list types (ordered, unordered, checklist)
-- [x] Add text alignment (left, center, right, justify)
-- [x] Implement font family & size picker
-- [x] Add text/background color picker
-- [x] Create link management (insert, edit, remove)
+---
 
-### 3.2 Advanced Editor Features
-- [x] Implement table creation and editing
-- [x] Add image upload & embedding (drag & drop)
-- [x] Create code blocks with syntax highlighting
-- [x] Implement block quotes and callouts
-- [x] Add page breaks and section dividers
-- [x] Create custom spacing & indentation controls
-- [x] Implement undo/redo with history stack
-- [x] Add find & replace functionality
-- [x] Create character/word count display
+## Phase 2: Database & Authentication
 
-### 3.3 Collaboration Features
-- [x] Implement real-time cursor position tracking
-- [x] Add user presence indicators (who's viewing/editing)
-- [x] Create inline commenting system
-- [x] Implement suggestion mode (track changes)
-- [x] Add conflict resolution for simultaneous edits
-- [x] Create activity log for document changes
-- [x] Implement @mentions for team members
+### 2.1 Database Migrations
+- [ ] Run default migrations (`php artisan migrate`)
+- [ ] Extend `users` table (add `avatar`, `bio`, `preferences` JSON)
+- [ ] Create `documents` table (id, uuid, title, content (longtext/JSON), owner_id, team_id, version, is_public, created_at, updated_at, deleted_at)
+- [ ] Create `document_collaborators` table (id, document_id, user_id, role, last_viewed_at)
+- [ ] Create `document_versions` table (id, document_id, content_snapshot, version_number, created_by, created_at)
+- [ ] Create `ai_suggestions` table (id, document_id, user_id, suggestion_text, accepted_at, created_at)
+- [ ] Create `comments` table (id, document_id, user_id, content, resolved_at, parent_id, created_at)
+- [ ] Run migrations
 
-## Phase 4: AI-Powered Features
+### 2.2 Authentication & Teams
+- [ ] Configure Jetstream features (2FA, profile photos, API tokens)
+- [ ] Set up team invitations and roles (owner, admin, editor, viewer)
+- [ ] Create team-based document policies
 
-### 4.1 AI Writing Assistant
-- [x] Create AI sidebar component with chat interface
-- [x] Implement text completion (continue writing)
-- [x] Add paraphrasing & rewriting tool
-- [x] Create tone adjustment (professional, casual, friendly)
-- [x] Implement grammar & spell check
-- [x] Add readability score & suggestions
-- [x] Create text summarization feature
-- [x] Implement expand/shorten text tools
+---
 
-### 4.2 AI Document Generation
-- [x] Create AI document generator wizard
-- [x] Add prompt-based document creation
-- [x] Implement outline generation from topic
-- [x] Create blog post/article generator
-- [x] Add email & letter templates generator
-- [x] Implement report & proposal generator
-- [x] Add SEO metadata generator
-- [x] Create translation feature (multi-language)
+## Phase 3: Core Document Engine
 
-### 4.3 AI Formatting & Enhancement
-- [x] Implement auto-formatting from raw text
-- [x] Add content improvement suggestions
-- [x] Create heading & structure optimization
-- [x] Implement key phrase extraction
-- [x] Add table/chart suggestion from data
-- [x] Create citation & reference generator
-- [x] Implement readability improvements
+### 3.1 Document Model & Relationships
+- [ ] Create `Document` model with fillable/guarded properties
+- [ ] Define relationships (belongs to user/team, has many collaborators, versions, comments)
+- [ ] Implement soft deletes
+- [ ] Add `DocumentObserver` for version auto-snapshotting
 
-### 4.4 AI Queue & Processing
-- [x] Set up job queues for long AI operations
-- [x] Create progress tracking for AI tasks
-- [x] Implement response caching for repeated prompts
-- [x] Add rate limiting & usage tracking
-- [x] Create AI usage analytics dashboard
+### 3.2 Document CRUD (Livewire)
+- [ ] Create `CreateDocument` Livewire component (modal form with title, template selection)
+- [ ] Create `EditDocument` Livewire component (main editor interface)
+- [ ] Create `DocumentList` Livewire component (dashboard listing with search/filter)
+- [ ] Create `DocumentSettings` Livewire component (rename, delete, transfer ownership)
+- [ ] Implement document sharing via public links or team/user invites
 
-## Phase 5: Document Features
+### 3.3 Rich Text Editor
+- [ ] Choose editor: TipTap (Vue) OR Quill with Alpine wrapper
+- [ ] Alternative: Integrate `@tinymce/tinymce-laravel` with Livewire
+- [ ] Build AlpineJS wrapper for real-time binding to Livewire
+- [ ] Implement formatting toolbar (bold, italic, underline, headings, lists, links)
+- [ ] Add image embedding (upload to S3/local, store URL in content)
+- [ ] Add table support
+- [ ] Add undo/redo (via editor native API)
 
-### 5.1 Templates
-- [x] Create template browser/library
-- [x] Implement template categories (business, education, personal)
-- [x] Add "Save as Template" feature
-- [x] Create template preview modal
-- [x] Implement template import/export
-- [x] Add team template sharing
-- [x] Create template versioning
+---
 
-### 5.2 Export & Import
-- [x] Implement PDF export with formatting
-- [x] Add DOCX export (Word compatible)
-- [x] Create HTML export
-- [x] Implement Markdown export
-- [x] Add plain text export
-- [x] Create batch export functionality
-- [x] Implement import from DOCX/Markdown/HTML
-- [x] Add import from Google Docs
+## Phase 4: Real-time Collaboration
 
-### 5.3 Version History
-- [x] Create version snapshot system
-- [x] Implement version comparison view
-- [x] Add version restore functionality
-- [x] Create named versions (milestones)
-- [x] Implement autosave versioning
-- [x] Add version notes/comments
-- [x] Create version cleanup policy
+### 4.1 WebSocket Setup
+- [ ] Install Laravel Reverb (`composer require laravel/reverb`)
+- [ ] Configure broadcasting in `.env` (`BROADCAST_CONNECTION=reverb`)
+- [ ] Set up Presence Channel for each document (`document.{id}`)
+- [ ] Install Laravel Echo client-side (`npm install laravel-echo pusher-js`)
 
-## Phase 6: Collaboration & Sharing
+### 4.2 Collaborative Editing (CRDT / OT)
+- [ ] Implement Yjs or ShareDB integration (Node.js microservice alternative)
+- [ ] Simplified approach: Send diffs via Livewire with debouncing
+- [ ] Create `DocumentUpdate` broadcast event with user ID, delta content, version
+- [ ] Listen on frontend with Echo + Turbo to merge updates
+- [ ] Display active cursors with user avatars (store cursor position in Redis)
 
-### 6.1 Sharing & Permissions
-- [x] Create share dialog with permission controls
-- [x] Implement role-based access (view, comment, edit)
-- [x] Add public link sharing with expiration
-- [x] Create password-protected shares
-- [x] Implement team member sharing
-- [x] Add domain-restricted sharing
-- [x] Create share analytics (views, edits)
+### 4.3 Presence & Awareness
+- [ ] Store active users in Redis sorted set per document
+- [ ] Broadcast user join/leave events
+- [ ] Show user list with live status (green dot, typing indicator)
+- [ ] Implement "Last edited by X at Y time"
 
-### 6.2 Comments & Reviews
-- [x] Create comment threading system
-- [x] Implement comment resolution toggle
-- [x] Add comment notifications (@mentions)
-- [x] Create document review workflow
-- [x] Implement approval/rejection system
-- [x] Add review summary dashboard
-- [x] Create comment export feature
+---
 
-### 6.3 Real-time Notifications
-- [x] Set up WebSocket/Laravel Echo
-- [x] Implement document change notifications
-- [x] Add comment notifications
-- [x] Create share access notifications
-- [x] Implement mention notifications
-- [x] Add browser push notifications
-- [x] Create notification preferences panel
+## Phase 5: Version History & Autosave
 
-## Phase 7: Teams & User Management
+### 5.1 Autosave System
+- [ ] Debounce content changes (Lodash `_.debounce`, 2-second delay)
+- [ ] Save to `documents` table content column via Livewire update
+- [ ] Trigger `DocumentVersion` creation every 30 changes or 5 minutes
+- [ ] Store version diffs (use `sebdesign/laravel-state-machine` or custom)
 
-### 7.1 Team Features
-- [x] Extend Jetstream teams with document roles
-- [x] Create team document dashboard
-- [x] Implement team activity feed
-- [x] Add team templates library
-- [x] Create team storage quota management
-- [x] Implement team analytics & usage stats
-- [x] Add team export (all documents)
+### 5.2 Version Browser
+- [ ] Create `VersionHistory` Livewire component (sidebar or modal)
+- [ ] List all versions with timestamps and user who saved
+- [ ] Implement restore functionality (copy content to current)
+- [ ] Add compare/diff view (highlight added/removed text)
 
-### 7.2 User Features
-- [x] Create user profile with preferences
-- [x] Implement personal dashboard (recents, starred)
-- [x] Add document star/favorite system
-- [x] Create custom folders/organization
-- [x] Implement search within documents
-- [x] Add keyboard shortcuts help modal
-- [x] Create user activity log
+### 5.3 Export & Import
+- [ ] Export to PDF (DomPDF or Browsershot)
+- [ ] Export to Word (PHPWord)
+- [ ] Export to Markdown / HTML
+- [ ] Import from Word / Markdown
+
+---
+
+## Phase 6: AI-Powered Features
+
+### 6.1 AI Service Layer
+- [ ] Create `AiService` class (supports OpenAI and Gemini)
+- [ ] Implement rate limiting and token usage tracking per user/team
+- [ ] Add configuration for AI models (gpt-4, gpt-3.5-turbo, gemini-pro)
+
+### 6.2 AI Writing Assistant
+- [ ] **Grammar & Spell Check**: Send text to AI, return corrections with inline suggestions
+- [ ] **Summarization**: Generate TL;DR of document
+- [ ] **Continue Writing**: AI generates next paragraph based on context
+- [ ] **Change Tone**: Formal, casual, persuasive, concise modes
+- [ ] **Translate**: Convert content to any language
+
+### 6.3 AI Command Palette (Ctrl+K / Cmd+K)
+- [ ] Build AlpineJS modal with AI commands
+- [ ] Commands: "/summarize", "/grammar", "/translate es", "/tone formal"
+- [ ] Execute command via Livewire, replace selected text with AI output
+
+### 6.4 AI Chat Sidebar
+- [ ] Persistent sidebar with chat interface (Ask AI about document)
+- [ ] Context-aware answers (AI reads entire document content)
+- [ ] Suggestions for improvements, missing sections, facts checking
+
+### 6.5 AI Templates & Smart Formatting
+- [ ] Generate document outline from prompt
+- [ ] Auto-format meeting notes, project proposals, blog posts
+- [ ] Smart tables: "Create a pricing comparison table for 3 products"
+
+---
+
+## Phase 7: Comments & Collaboration
+
+### 7.1 Comment System
+- [ ] Create `Comment` model (polymorphic, threaded)
+- [ ] Build Livewire comment thread component (resolves to document + text selection)
+- [ ] Implement real-time comment notifications (broadcast to collaborators)
+- [ ] Add @mentions with user search
+- [ ] Resolve/re-open comments
+
+### 7.2 Suggestion Mode (Track Changes)
+- [ ] Add toggle: Edit mode vs Suggestion mode
+- [ ] In suggestion mode, edits are stored as `ai_suggestions` table
+- [ ] Accept/reject buttons for each suggestion (merge or discard)
+- [ ] Display suggested changes with diff highlighting
+
+### 7.3 Real-time Notifications
+- [ ] Set up database notifications for mentions, comments, shares
+- [ ] Broadcast to browser via Echo (toast notifications)
+- [ ] Email digest for offline users (daily/hourly)
+
+---
 
 ## Phase 8: Performance & Optimization
 
-### 8.1 Performance Improvements
-- [x] Implement editor content lazy loading
-- [x] Add document pagination for large files
-- [x] Create image optimization pipeline
-- [x] Implement browser caching strategy
-- [x] Add database indexing optimization
-- [x] Create Livewire component lazy loading
-- [x] Implement asset versioning & minification
+### 8.1 Caching Strategy
+- [ ] Cache document content for guests (5 minutes, Redis)
+- [ ] Cache user permissions per document (TTL 15 min)
+- [ ] Invalidate cache on update via model events
 
-### 8.2 Offline & Mobile Support
-- [x] Implement PWA for offline access
-- [x] Add offline document editing
-- [x] Create sync queue for offline changes
-- [x] Implement responsive mobile editor
-- [x] Add touch-friendly formatting toolbar
-- [x] Create mobile document viewer mode
+### 8.2 Lazy Loading & Pagination
+- [ ] Paginate document versions (10 per page)
+- [ ] Lazy load comments until sidebar opened
+- [ ] Implement infinite scroll for document list
 
-## Phase 9: Security & Compliance
+### 8.3 Asset Optimization
+- [ ] Configure Vite chunk splitting
+- [ ] Lazy load AI components (dynamic imports)
+- [ ] Optimize images (Intervention Image, WebP conversion)
 
-### 9.1 Security Features
-- [x] Implement 2FA (Jetstream built-in)
-- [x] Add session management
-- [x] Create audit log for sensitive actions
-- [x] Implement XSS prevention for editor
-- [x] Add CSRF protection for all forms
-- [x] Create rate limiting for API/AI endpoints
-- [x] Implement backup & restore system
+---
 
-### 9.2 Data Protection
-- [x] Add document encryption at rest
-- [x] Implement GDPR compliance tools
-- [x] Create data export (user documents)
-- [x] Add account deletion workflow
-- [x] Implement retention policies
-- [x] Create backup verification system
+## Phase 9: Security & Permissions
+
+### 9.1 Authorization (Policies)
+- [ ] Create `DocumentPolicy` (view, update, delete, manage, share)
+- [ ] Team-based access (owner, admin, editor, viewer)
+- [ ] Public link access with password/expiration options
+
+### 9.2 Input Sanitization
+- [ ] Sanitize HTML content (HTMLPurifier or Laravel's `clean()`)
+- [ ] Prevent XSS in comments and AI outputs
+- [ ] Validate all AI API inputs (length limits, rate limiting per user)
+
+### 9.3 API Rate Limiting
+- [ ] Apply rate limiter for AI endpoints (`20 per minute` per user)
+- [ ] Limit document export to `10 per hour`
+
+---
 
 ## Phase 10: Testing & Deployment
 
 ### 10.1 Testing
-- [x] Write unit tests for models & services
-- [x] Create feature tests for document operations
-- [x] Implement AI service mock tests
-- [x] Add browser tests (Dusk) for editor
-- [x] Create performance/load tests
-- [x] Implement security penetration tests
-- [x] Add accessibility testing (WCAG)
+- [ ] Write Pest tests for document CRUD (authentication, authorization)
+- [ ] Test real-time broadcasting (Redis + Reverb locally)
+- [ ] Mock AI API responses for feature tests
+- [ ] Browser tests with Laravel Dusk (collaborative editing)
 
-### 10.2 Deployment
-- [x] Set up CI/CD pipeline (GitHub Actions)
-- [x] Configure staging environment
-- [x] Create database migration strategy
-- [x] Implement deployment rollback system
-- [x] Set up monitoring (Laravel Telescope)
-- [x] Add error tracking (Sentry/Bugsnag)
-- [x] Create analytics dashboard (Plausible/Google)
-- [x] Write documentation (user & developer)
+### 10.2 Production Deployment
+- [ ] Set up queue worker for AI jobs (`php artisan queue:work`)
+- [ ] Configure Reverb with SSL and supervisor
+- [ ] Set up Horizon (optional) for queue monitoring
+- [ ] Deploy to Forge / Vapor / Custom server
+- [ ] Configure CDN for assets and images (CloudFront / S3)
 
-## Phase 11: Advanced Features (Bonus)
+### 10.3 Monitoring & Analytics
+- [ ] Install Laravel Telescope (local) / Pulse (production)
+- [ ] Log AI token usage per document (database table)
+- [ ] Set up error tracking (Sentry / Flare)
+- [ ] Track active documents and collaboration metrics
 
-### 11.1 Integration
-- [x] Add Zapier/Make webhook support
-- [x] Implement Slack/Discord notifications
-- [x] Create Google Drive integration
-- [x] Add Dropbox integration
-- [x] Implement Microsoft OneDrive support
-- [x] Create REST API for external access
+---
 
-### 11.2 Premium Features
-- [x] Implement AI image generation (DALL-E/Midjourney)
-- [x] Add voice-to-text dictation
-- [x] Create document analytics (time spent, edits)
-- [x] Implement plagiarism checker
-- [x] Add citation management (Zotero/Mendeley)
-- [x] Create mail merge feature
-- [x] Implement form builder within documents
+## Phase 11: Additional Features (Stretch Goals)
 
-## Estimated Timeline Breakdown
+### 11.1 Document Templates Gallery
+- [ ] Pre-built templates (Resume, Proposal, Meeting Notes, Blog Post)
+- [ ] Save current document as template for team
 
-- **Phase 1-2 (Foundation)**: 2-3 weeks
-- **Phase 3 (Editor)**: 3-4 weeks
-- **Phase 4 (AI Features)**: 4-5 weeks
-- **Phase 5-6 (Document Features)**: 3-4 weeks
-- **Phase 7 (Teams)**: 2 weeks
-- **Phase 8-9 (Performance/Security)**: 2-3 weeks
-- **Phase 10-11 (Testing/Advanced)**: 3-4 weeks
+### 11.2 Voice Typing
+- [ ] Integrate Web Speech API (frontend transcription)
+- [ ] Send transcribed text to AI for formatting
 
-**Total estimated development time**: 19-29 weeks (4-7 months for a team of 2-3 developers)
+### 11.3 Offline Mode
+- [ ] Service Worker + IndexedDB for offline editing
+- [ ] Sync when connection restored (background sync)
 
-## Priority Order (MVP First)
+### 11.4 Add-ons / Plugins System
+- [ ] Allow custom slash commands
+- [ ] Webhook triggers (on save, on export)
 
-1. Basic document CRUD + editor
-2. Essential AI features (completion, grammar)
-3. Sharing & basic collaboration
-4. Templates & export
-5. Version history
-6. Advanced AI & real-time collaboration
-7. Teams & permissions
-8. Integrations & premium features
+---
+
+## Notes
+- Use `hotwired/turbo` to speed up Livewire navigation (Turbo Drive)
+- Use Lodash for debouncing autosave and AI calls
+- Consider Laravel Scout for full-text search across documents
+- For complex collaborative editing, evaluate `LivewireCollaboration` package or integrate `Yjs` via separate Node server
