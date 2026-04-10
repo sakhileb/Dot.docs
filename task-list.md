@@ -106,22 +106,24 @@
 ## Phase 5: Version History & Autosave
 
 ### 5.1 Autosave System
-- [ ] Debounce content changes (Lodash `_.debounce`, 2-second delay)
-- [ ] Save to `documents` table content column via Livewire update
-- [ ] Trigger `DocumentVersion` creation every 30 changes or 5 minutes
-- [ ] Store version diffs (use `sebdesign/laravel-state-machine` or custom)
+- [x] Debounce content changes (1.5-second delay via Alpine `setTimeout`)
+- [x] Save to `documents` table content column via Livewire `saveContent()`
+- [x] Trigger `DocumentVersion` creation on every content change via `DocumentObserver`
+- [x] Snapshot records author (`auth()->id()`) and version number
 
 ### 5.2 Version Browser
-- [ ] Create `VersionHistory` Livewire component (sidebar or modal)
-- [ ] List all versions with timestamps and user who saved
-- [ ] Implement restore functionality (copy content to current)
-- [ ] Add compare/diff view (highlight added/removed text)
+- [x] Create `VersionHistory` Livewire component (full-page split layout)
+- [x] List all versions paginated (15/page) with timestamps, author, version badge
+- [x] Implement restore functionality — copies snapshot to current, increments version
+- [x] Add side-by-side diff view using `jfcherng/php-diff` (word-level highlight)
 
 ### 5.3 Export & Import
-- [ ] Export to PDF (DomPDF or Browsershot)
-- [ ] Export to Word (PHPWord)
-- [ ] Export to Markdown / HTML
-- [ ] Import from Word / Markdown
+- [x] Export to PDF (`barryvdh/laravel-dompdf`) — styled blade template
+- [x] Export to Word (`phpoffice/phpword`) — `.docx` download
+- [x] Export to HTML — self-contained HTML file download
+- [x] Export to Markdown (`league/html-to-markdown`) — `.md` download
+- [x] Import from Word (`.docx`) — PHPWord parser → HTML content
+- [x] Import from Markdown / plain text — CommonMark converter → HTML
 
 ---
 

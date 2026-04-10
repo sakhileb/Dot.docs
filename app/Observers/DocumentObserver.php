@@ -26,7 +26,8 @@ class DocumentObserver
                 'document_id'      => $document->id,
                 'content_snapshot' => $document->content,
                 'version_number'   => $document->version,
-                'created_by'       => $document->owner_id,
+                'created_by'       => auth()->id() ?? $document->owner_id,
+                'created_at'       => now(),
             ]);
         }
     }
