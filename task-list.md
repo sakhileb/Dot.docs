@@ -163,22 +163,22 @@
 ## Phase 7: Comments & Collaboration
 
 ### 7.1 Comment System
-- [ ] Create `Comment` model (polymorphic, threaded)
-- [ ] Build Livewire comment thread component (resolves to document + text selection)
-- [ ] Implement real-time comment notifications (broadcast to collaborators)
-- [ ] Add @mentions with user search
-- [ ] Resolve/re-open comments
+- [x] Create `Comment` model (polymorphic, threaded)
+- [x] Build Livewire comment thread component (resolves to document + text selection)
+- [x] Implement real-time comment notifications (broadcast to collaborators)
+- [x] Add @mentions with user search
+- [x] Resolve/re-open comments
 
 ### 7.2 Suggestion Mode (Track Changes)
-- [ ] Add toggle: Edit mode vs Suggestion mode
-- [ ] In suggestion mode, edits are stored as `ai_suggestions` table
-- [ ] Accept/reject buttons for each suggestion (merge or discard)
-- [ ] Display suggested changes with diff highlighting
+- [x] Add toggle: Edit mode vs Suggestion mode
+- [x] In suggestion mode, edits are stored as `ai_suggestions` table
+- [x] Accept/reject buttons for each suggestion (merge or discard)
+- [x] Display suggested changes with diff highlighting
 
 ### 7.3 Real-time Notifications
-- [ ] Set up database notifications for mentions, comments, shares
-- [ ] Broadcast to browser via Echo (toast notifications)
-- [ ] Email digest for offline users (daily/hourly)
+- [x] Set up database notifications for mentions, comments, shares
+- [x] Broadcast to browser via Echo (toast notifications)
+- [x] Email digest for offline users (daily/hourly)
 
 ---
 

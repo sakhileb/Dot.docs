@@ -14,7 +14,47 @@ class Comment extends Model
         'content',
         'resolved_at',
         'parent_id',
+        'selection_text',
+        'selection_start',
+        'selection_end',
     ];
+
+    protected $casts = [
+        'resolved_at' => 'datetime',
+    ];
+
+    public function document(): BelongsTo
+    {
+        return $this->belongsTo(Document::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->with('user:id,name,profile_photo_path')->orderBy('created_at');
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->resolved_at !== null;
+    }
+
+    /** Extract @mentioned usernames from comment content */
+    public function extractMentions(): array
+    {
+        preg_match_all('/@(\w+)/', $this->content, $matches);
+        return $matches[1] ?? [];
+    }
+}
 
     protected $casts = [
         'resolved_at' => 'datetime',

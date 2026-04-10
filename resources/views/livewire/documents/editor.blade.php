@@ -68,6 +68,9 @@
                 })
                 .listen('.user.left', (e) => {
                     @this.heartbeat();
+                })
+                .listen('.comment.posted', (e) => {
+                    Livewire.dispatch('comment-posted', e);
                 });
         },
 
@@ -94,6 +97,7 @@
     x-init="init()"
     x-destroy="destroy()"
     @ai-apply.window="applyAiContent('replace', $event.detail.content)"
+    @suggestion-accepted.window="if (editor) { editor.commands.setContent($event.detail.content, true); }"
     @keydown.ctrl.k.window.prevent="$dispatch('open-ai-palette')"
     @keydown.meta.k.window.prevent="$dispatch('open-ai-palette')"
     class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900"
@@ -261,6 +265,21 @@
 
             <a href="{{ route('documents.share', $document->uuid) }}"
                class="text-xs text-indigo-600 hover:underline">Share</a>
+
+            {{-- Suggestion mode toggle --}}
+            <span class="w-px h-5 bg-gray-300 dark:bg-gray-600"></span>
+            <button wire:click="toggleSuggestionMode"
+                    class="text-xs px-2 py-1 rounded transition {{ $suggestionMode ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 font-semibold' : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700' }}"
+                    title="{{ $suggestionMode ? 'Exit suggesting mode (track changes)' : 'Enter suggesting mode (track changes)' }}">
+                ✏️ {{ $suggestionMode ? 'Suggesting' : 'Editing' }}
+            </button>
+
+            {{-- Comments sidebar toggle --}}
+            <button wire:click="toggleCommentSidebar"
+                    class="text-xs px-2 py-1 rounded transition {{ $commentSidebarOpen ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 font-semibold' : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700' }}"
+                    title="{{ $commentSidebarOpen ? 'Close comments' : 'Open comments' }}">
+                💬 Comments
+            </button>
             <a href="{{ route('documents.history', $document->uuid) }}"
                class="text-xs text-gray-500 hover:underline">History</a>
 
@@ -311,11 +330,51 @@
         </div>
     </div>
 
-    {{-- Editor area --}}
-    <div class="flex-1 overflow-auto">
-        <div class="max-w-4xl mx-auto py-10 px-6">
-            <div x-ref="editorEl"
-                 class="prose prose-lg dark:prose-invert max-w-none min-h-[60vh] focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror-focused]:outline-none"></div>
+    {{-- Pending suggestions panel (track changes) --}}
+    @if(count($pendingSuggestions) > 0)
+        <div class="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-2">
+            <div class="max-w-4xl mx-auto">
+                <p class="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1.5">
+                    {{ count($pendingSuggestions) }} pending suggestion{{ count($pendingSuggestions) !== 1 ? 's' : '' }}
+                </p>
+                <div class="flex flex-col gap-1.5">
+                    @foreach($pendingSuggestions as $suggestion)
+                        <div class="flex items-center gap-2 text-xs bg-white dark:bg-gray-800 rounded border border-amber-200 dark:border-amber-700 px-3 py-1.5">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">{{ $suggestion['user'] }}</span>
+                            <span class="text-gray-400">·</span>
+                            <span class="text-gray-400">{{ $suggestion['created_at'] }}</span>
+                            <span class="text-gray-400">·</span>
+                            <span class="flex-1 truncate text-gray-600 dark:text-gray-400 italic">{{ $suggestion['excerpt'] }}</span>
+                            <button wire:click="acceptSuggestion({{ $suggestion['id'] }})"
+                                    class="flex-shrink-0 px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-900/50 transition font-medium">
+                                Accept
+                            </button>
+                            <button wire:click="rejectSuggestion({{ $suggestion['id'] }})"
+                                    class="flex-shrink-0 px-2 py-0.5 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition font-medium">
+                                Reject
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
+    @endif
+
+    {{-- Editor area (with optional comment sidebar) --}}
+    <div class="flex flex-1 overflow-hidden">
+        {{-- Main editor --}}
+        <div class="flex-1 overflow-auto">
+            <div class="{{ $commentSidebarOpen ? 'mx-auto py-10 px-6' : 'max-w-4xl mx-auto py-10 px-6' }}">
+                <div x-ref="editorEl"
+                     class="prose prose-lg dark:prose-invert max-w-none min-h-[60vh] focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror-focused]:outline-none"></div>
+            </div>
+        </div>
+
+        {{-- Comment sidebar --}}
+        @if($commentSidebarOpen)
+            <div class="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-white dark:bg-gray-800">
+                @livewire('documents.comment-thread', ['document' => $document], key('comment-thread'))
+            </div>
+        @endif
     </div>
 </div>
