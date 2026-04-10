@@ -39,19 +39,19 @@
 ## Phase 2: Database & Authentication
 
 ### 2.1 Database Migrations
-- [ ] Run default migrations (`php artisan migrate`)
-- [ ] Extend `users` table (add `avatar`, `bio`, `preferences` JSON)
-- [ ] Create `documents` table (id, uuid, title, content (longtext/JSON), owner_id, team_id, version, is_public, created_at, updated_at, deleted_at)
-- [ ] Create `document_collaborators` table (id, document_id, user_id, role, last_viewed_at)
-- [ ] Create `document_versions` table (id, document_id, content_snapshot, version_number, created_by, created_at)
-- [ ] Create `ai_suggestions` table (id, document_id, user_id, suggestion_text, accepted_at, created_at)
-- [ ] Create `comments` table (id, document_id, user_id, content, resolved_at, parent_id, created_at)
-- [ ] Run migrations
+- [x] Run default migrations (`php artisan migrate`)
+- [x] Extend `users` table (add `bio`, `preferences` JSON)
+- [x] Create `documents` table (id, uuid, title, content (longtext/JSON), owner_id, team_id, version, is_public, created_at, updated_at, deleted_at)
+- [x] Create `document_collaborators` table (id, document_id, user_id, role, last_viewed_at)
+- [x] Create `document_versions` table (id, document_id, content_snapshot, version_number, created_by, created_at)
+- [x] Create `ai_suggestions` table (id, document_id, user_id, suggestion_text, accepted_at, created_at)
+- [x] Create `comments` table (id, document_id, user_id, content, resolved_at, parent_id, created_at)
+- [x] Run migrations
 
 ### 2.2 Authentication & Teams
-- [ ] Configure Jetstream features (2FA, profile photos, API tokens)
-- [ ] Set up team invitations and roles (owner, admin, editor, viewer)
-- [ ] Create team-based document policies
+- [x] Configure Jetstream features (2FA, profile photos, API tokens)
+- [x] Set up team invitations and roles (owner, admin, editor, viewer)
+- [x] Create team-based document policies
 
 ---
 
