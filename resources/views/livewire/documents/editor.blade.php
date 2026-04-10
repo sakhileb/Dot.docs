@@ -103,8 +103,8 @@
     class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900"
 >
     {{-- AI Components (outside toolbar, at root level) --}}
-    @livewire('documents.ai-assistant', ['document' => $document], key('ai-assistant'))
-    @livewire('documents.ai-chat', ['document' => $document], key('ai-chat'))
+    @livewire('documents.ai-assistant', ['document' => $document], key('ai-assistant'), lazy: true)
+    @livewire('documents.ai-chat', ['document' => $document], key('ai-chat'), lazy: true)
 
     {{-- Listen for Ctrl+K to open AI palette --}}
     <div x-data

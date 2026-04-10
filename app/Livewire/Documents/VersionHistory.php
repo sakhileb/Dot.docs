@@ -110,7 +110,7 @@ class VersionHistory extends Component
         $versions = DocumentVersion::where('document_id', $this->document->id)
             ->with('author:id,name,profile_photo_path')
             ->orderByDesc('version_number')
-            ->paginate(15);
+            ->paginate(10);
 
         $previewVersion = $this->previewId
             ? DocumentVersion::find($this->previewId)

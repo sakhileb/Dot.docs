@@ -8,4 +8,16 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        chunkSizeWarningLimit: 600,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('@tiptap/')) return 'vendor-tiptap';
+                    if (id.includes('laravel-echo') || id.includes('pusher-js')) return 'vendor-echo';
+                    if (id.includes('alpinejs')) return 'vendor-alpine';
+                },
+            },
+        },
+    },
 });

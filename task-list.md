@@ -185,19 +185,19 @@
 ## Phase 8: Performance & Optimization
 
 ### 8.1 Caching Strategy
-- [ ] Cache document content for guests (5 minutes, Redis)
-- [ ] Cache user permissions per document (TTL 15 min)
-- [ ] Invalidate cache on update via model events
+- [x] Cache document content for guests (5 minutes, Redis)
+- [x] Cache user permissions per document (TTL 15 min)
+- [x] Invalidate cache on update via model events
 
 ### 8.2 Lazy Loading & Pagination
-- [ ] Paginate document versions (10 per page)
-- [ ] Lazy load comments until sidebar opened
-- [ ] Implement infinite scroll for document list
+- [x] Paginate document versions (10 per page)
+- [x] Lazy load comments until sidebar opened
+- [x] Implement infinite scroll for document list
 
 ### 8.3 Asset Optimization
-- [ ] Configure Vite chunk splitting
-- [ ] Lazy load AI components (dynamic imports)
-- [ ] Optimize images (Intervention Image, WebP conversion)
+- [x] Configure Vite chunk splitting
+- [x] Lazy load AI components (dynamic imports)
+- [x] Optimize images (Intervention Image, WebP conversion)
 
 ---
 

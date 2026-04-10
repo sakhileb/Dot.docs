@@ -6,20 +6,28 @@ use App\Models\Document;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination;
-
     public string $search = '';
     public string $filter = 'all'; // all | mine | shared | team
     public bool $showCreateModal = false;
     public string $newTitle = '';
+    public int $perPage = 12;
 
     public function updatingSearch(): void
     {
-        $this->resetPage();
+        $this->perPage = 12;
+    }
+
+    public function updatingFilter(): void
+    {
+        $this->perPage = 12;
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 12;
     }
 
     #[Computed]
@@ -27,7 +35,7 @@ class Index extends Component
     {
         $user = auth()->user();
 
-        $query = Document::query()
+        return Document::query()
             ->where(function ($q) use ($user) {
                 $q->where('owner_id', $user->id)
                   ->orWhereHas('collaborators', fn ($q) => $q->where('user_id', $user->id));
@@ -41,9 +49,7 @@ class Index extends Component
             ->when($this->filter === 'shared', fn ($q) => $q->whereHas('collaborators', fn ($q) => $q->where('user_id', $user->id)))
             ->when($this->filter === 'team', fn ($q) => $user->currentTeam ? $q->where('team_id', $user->currentTeam->id) : $q)
             ->latest()
-            ->paginate(12);
-
-        return $query;
+            ->paginate($this->perPage);
     }
 
     public function createDocument(): void

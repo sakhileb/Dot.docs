@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Document extends Model
 {
@@ -53,6 +54,27 @@ class Document extends Model
     public function aiSuggestions(): HasMany
     {
         return $this->hasMany(AiSuggestion::class);
+    }
+
+    /**
+     * Return cached content for public documents (5-minute TTL).
+     * Private documents are returned directly from the model.
+     */
+    public function cachedContent(): ?string
+    {
+        if (! $this->is_public) {
+            return $this->content;
+        }
+
+        return Cache::remember("doc.content.{$this->uuid}", 300, fn () => $this->content);
+    }
+
+    /**
+     * Find a document by UUID, caching the result for 5 minutes.
+     */
+    public static function findByUuidCached(string $uuid): ?self
+    {
+        return Cache::remember("doc.record.{$uuid}", 300, fn () => static::where('uuid', $uuid)->first());
     }
 }
 

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 
 class DocumentImageController extends Controller
 {
@@ -17,10 +20,13 @@ class DocumentImageController extends Controller
             'image' => 'required|image|max:4096',
         ]);
 
-        $path = $request->file('image')->store('document-images', 'public');
+        $filename = Str::uuid() . '.webp';
+        $encoded  = Image::read($request->file('image'))->toWebp(quality: 82);
+
+        Storage::disk('public')->put('document-images/' . $filename, $encoded->toString());
 
         return response()->json([
-            'url' => asset('storage/' . $path),
+            'url' => asset('storage/document-images/' . $filename),
         ]);
     }
 }

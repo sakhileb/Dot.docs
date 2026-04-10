@@ -59,7 +59,26 @@
         </div>
 
         <div class="mt-6">
-            {{ $this->documents->links() }}
+            @if($this->documents->hasMorePages())
+                {{-- Infinite scroll sentinel --}}
+                <div
+                    x-data
+                    x-init="
+                        const obs = new IntersectionObserver(entries => {
+                            if (entries[0].isIntersecting) $wire.loadMore();
+                        }, { rootMargin: '300px' });
+                        obs.observe($el);
+                        $wire.$cleanup(() => obs.disconnect());
+                    "
+                    class="h-4"
+                ></div>
+                <div wire:loading wire:target="loadMore"
+                     class="py-6 text-center text-sm text-gray-400 animate-pulse">
+                    Loading more…
+                </div>
+            @else
+                <p class="text-center text-xs text-gray-400 py-4">All documents loaded</p>
+            @endif
         </div>
     @endif
 

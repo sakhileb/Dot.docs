@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Document;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 
 class DocumentPolicy
 {
@@ -30,11 +31,16 @@ class DocumentPolicy
             return true;
         }
 
-        if ($document->team_id && $user->belongsToTeam($document->team)) {
-            return true;
-        }
-
-        return $document->collaborators()->where('user_id', $user->id)->exists();
+        return Cache::tags(["doc_{$document->id}"])->remember(
+            "doc.view.{$user->id}.{$document->id}",
+            900,
+            function () use ($user, $document) {
+                if ($document->team_id && $user->belongsToTeam($document->team)) {
+                    return true;
+                }
+                return $document->collaborators()->where('user_id', $user->id)->exists();
+            }
+        );
     }
 
     /**
@@ -55,15 +61,20 @@ class DocumentPolicy
             return true;
         }
 
-        if ($document->team_id && $user->belongsToTeam($document->team)) {
-            $role = $user->teamRole($document->team);
-            return $role && in_array($role->key, ['admin', 'editor']);
-        }
-
-        return $document->collaborators()
-            ->where('user_id', $user->id)
-            ->whereIn('role', ['editor', 'admin'])
-            ->exists();
+        return Cache::tags(["doc_{$document->id}"])->remember(
+            "doc.update.{$user->id}.{$document->id}",
+            900,
+            function () use ($user, $document) {
+                if ($document->team_id && $user->belongsToTeam($document->team)) {
+                    $role = $user->teamRole($document->team);
+                    return $role && in_array($role->key, ['admin', 'editor']);
+                }
+                return $document->collaborators()
+                    ->where('user_id', $user->id)
+                    ->whereIn('role', ['editor', 'admin'])
+                    ->exists();
+            }
+        );
     }
 
     /**
@@ -104,56 +115,3 @@ class DocumentPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Document $document): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Document $document): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Document $document): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Document $document): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Document $document): bool
-    {
-        return false;
-    }
-}

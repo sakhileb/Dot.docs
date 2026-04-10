@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Document;
 use App\Models\DocumentVersion;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class DocumentObserver
@@ -21,6 +22,10 @@ class DocumentObserver
      */
     public function updated(Document $document): void
     {
+        // Bust permission + content caches
+        Cache::tags(["doc_{$document->id}"])->flush();
+        Cache::forget("doc.content.{$document->uuid}");
+
         if ($document->wasChanged('content') && $document->content !== null) {
             DocumentVersion::create([
                 'document_id'      => $document->id,
@@ -31,4 +36,11 @@ class DocumentObserver
             ]);
         }
     }
+
+    public function deleted(Document $document): void
+    {
+        Cache::tags(["doc_{$document->id}"])->flush();
+        Cache::forget("doc.content.{$document->uuid}");
+    }
 }
+
