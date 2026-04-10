@@ -1,4 +1,5 @@
 import './bootstrap';
+import './editor';
 import Alpine from 'alpinejs';
 import '@hotwired/turbo';
 import _ from 'lodash';

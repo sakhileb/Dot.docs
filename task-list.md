@@ -58,26 +58,25 @@
 ## Phase 3: Core Document Engine
 
 ### 3.1 Document Model & Relationships
-- [ ] Create `Document` model with fillable/guarded properties
-- [ ] Define relationships (belongs to user/team, has many collaborators, versions, comments)
-- [ ] Implement soft deletes
-- [ ] Add `DocumentObserver` for version auto-snapshotting
+- [x] Create `Document` model with fillable/guarded properties
+- [x] Define relationships (belongs to user/team, has many collaborators, versions, comments)
+- [x] Implement soft deletes
+- [x] Add `DocumentObserver` for version auto-snapshotting (UUID generation on create)
 
 ### 3.2 Document CRUD (Livewire)
-- [ ] Create `CreateDocument` Livewire component (modal form with title, template selection)
-- [ ] Create `EditDocument` Livewire component (main editor interface)
-- [ ] Create `DocumentList` Livewire component (dashboard listing with search/filter)
-- [ ] Create `DocumentSettings` Livewire component (rename, delete, transfer ownership)
-- [ ] Implement document sharing via public links or team/user invites
+- [x] Create `Documents/Index` Livewire component (grid list with search/filter + create modal)
+- [x] Create `Documents/Editor` Livewire component (full editor interface with autosave)
+- [x] Create `Documents/ShareManager` Livewire component (public link, collaborator invite/remove)
+- [x] Create `Documents/DocumentSettings` Livewire component (rename, public toggle, transfer, delete)
+- [x] Implement document sharing via public links or team/user invites
 
 ### 3.3 Rich Text Editor
-- [ ] Choose editor: TipTap (Vue) OR Quill with Alpine wrapper
-- [ ] Alternative: Integrate `@tinymce/tinymce-laravel` with Livewire
-- [ ] Build AlpineJS wrapper for real-time binding to Livewire
-- [ ] Implement formatting toolbar (bold, italic, underline, headings, lists, links)
-- [ ] Add image embedding (upload to S3/local, store URL in content)
-- [ ] Add table support
-- [ ] Add undo/redo (via editor native API)
+- [x] Chose TipTap editor (Alpine wrapper)
+- [x] Build AlpineJS wrapper for real-time binding to Livewire (1.5s debounce autosave)
+- [x] Implement formatting toolbar (bold, italic, headings H1–H3, bullet/ordered lists, links)
+- [x] Add image embedding (upload to local storage, return URL via DocumentImageController)
+- [x] Add table support (TipTap Table extension)
+- [x] Add undo/redo (TipTap native history via StarterKit)
 
 ---
 

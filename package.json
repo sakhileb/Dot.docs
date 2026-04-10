@@ -20,6 +20,15 @@
     },
     "dependencies": {
         "@hotwired/turbo": "^8.0.23",
+        "@tiptap/core": "^3.22.3",
+        "@tiptap/extension-image": "^3.22.3",
+        "@tiptap/extension-link": "^3.22.3",
+        "@tiptap/extension-placeholder": "^3.22.3",
+        "@tiptap/extension-table": "^3.22.3",
+        "@tiptap/extension-table-cell": "^3.22.3",
+        "@tiptap/extension-table-header": "^3.22.3",
+        "@tiptap/extension-table-row": "^3.22.3",
+        "@tiptap/starter-kit": "^3.22.3",
         "alpinejs": "^3.15.11",
         "lodash": "^4.18.1"
     }
