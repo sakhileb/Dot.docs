@@ -83,23 +83,23 @@
 ## Phase 4: Real-time Collaboration
 
 ### 4.1 WebSocket Setup
-- [ ] Install Laravel Reverb (`composer require laravel/reverb`)
-- [ ] Configure broadcasting in `.env` (`BROADCAST_CONNECTION=reverb`)
-- [ ] Set up Presence Channel for each document (`document.{id}`)
-- [ ] Install Laravel Echo client-side (`npm install laravel-echo pusher-js`)
+- [x] Install Laravel Reverb (`composer require laravel/reverb`)
+- [x] Configure broadcasting in `.env` (`BROADCAST_CONNECTION=reverb`)
+- [x] Set up Presence Channel for each document (`document.{id}`)
+- [x] Install Laravel Echo client-side (`npm install laravel-echo pusher-js`)
 
 ### 4.2 Collaborative Editing (CRDT / OT)
-- [ ] Implement Yjs or ShareDB integration (Node.js microservice alternative)
-- [ ] Simplified approach: Send diffs via Livewire with debouncing
-- [ ] Create `DocumentUpdate` broadcast event with user ID, delta content, version
-- [ ] Listen on frontend with Echo + Turbo to merge updates
-- [ ] Display active cursors with user avatars (store cursor position in Redis)
+- [x] Simplified approach: Send diffs via Livewire with debouncing
+- [x] Create `DocumentUpdated` broadcast event with user ID, content, version
+- [x] Listen on frontend with Echo to merge remote updates (skip own edits)
+- [x] Display active user avatars (store presence in Redis/Cache via PresenceService)
 
 ### 4.3 Presence & Awareness
-- [ ] Store active users in Redis sorted set per document
-- [ ] Broadcast user join/leave events
-- [ ] Show user list with live status (green dot, typing indicator)
-- [ ] Implement "Last edited by X at Y time"
+- [x] Store active users in Cache (Redis) per document via `PresenceService`
+- [x] Broadcast `UserJoinedDocument` / `UserLeftDocument` events
+- [x] Show active collaborator avatars in editor toolbar (overflow badge for 4+)
+- [x] Typing indicator (amber dot) + save status in toolbar
+- [x] Implement "Last edited by X at Y time" version display
 
 ---
 
