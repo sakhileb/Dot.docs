@@ -92,7 +92,7 @@
     @endif
 
     {{-- Open gallery via window event --}}
-    <div x-data @open-template-gallery.window="$wire.dispatchTo('documents.template-gallery', 'open')" class="hidden"></div>
+    <div x-data @open-template-gallery.window="Livewire.dispatchTo('documents.template-gallery', 'open')" class="hidden"></div>
 
     {{-- Create Modal --}}
     @if($showCreateModal)

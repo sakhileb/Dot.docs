@@ -74,12 +74,14 @@
     </div>
 
     {{-- Real-time: listen on private user channel for new notifications --}}
-    <div x-init="
+    @script
+    <script>
         if (typeof window.Echo !== 'undefined') {
             window.Echo.private('App.Models.User.{{ auth()->id() }}')
-                .notification((notification) => {
-                    \$wire.dispatch('notification-received');
+                .notification(() => {
+                    $wire.dispatch('notification-received');
                 });
         }
-    "></div>
+    </script>
+    @endscript
 </div>

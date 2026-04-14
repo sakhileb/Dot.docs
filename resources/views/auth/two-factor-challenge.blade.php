@@ -4,12 +4,17 @@
             <x-authentication-card-logo />
         </x-slot>
 
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-extrabold text-slate-900">Two-factor authentication</h1>
+            <p class="text-sm text-slate-500 mt-1">Confirm access to your account</p>
+        </div>
+
         <div x-data="{ recovery: false }">
-            <div class="mb-4 text-sm text-gray-600" x-show="! recovery">
+            <div class="mb-4 text-sm text-slate-500" x-show="! recovery">
                 {{ __('Please confirm access to your account by entering the authentication code provided by your authenticator application.') }}
             </div>
 
-            <div class="mb-4 text-sm text-gray-600" x-cloak x-show="recovery">
+            <div class="mb-4 text-sm text-slate-500" x-cloak x-show="recovery">
                 {{ __('Please confirm access to your account by entering one of your emergency recovery codes.') }}
             </div>
 
@@ -29,22 +34,24 @@
                 </div>
 
                 <div class="flex items-center justify-end mt-4">
-                    <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer"
-                                    x-show="! recovery"
-                                    x-on:click="
-                                        recovery = true;
-                                        $nextTick(() => { $refs.recovery_code.focus() })
-                                    ">
+                    <button type="button"
+                            class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
+                            x-show="! recovery"
+                            x-on:click="
+                                recovery = true;
+                                $nextTick(() => { $refs.recovery_code.focus() })
+                            ">
                         {{ __('Use a recovery code') }}
                     </button>
 
-                    <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer"
-                                    x-cloak
-                                    x-show="recovery"
-                                    x-on:click="
-                                        recovery = false;
-                                        $nextTick(() => { $refs.code.focus() })
-                                    ">
+                    <button type="button"
+                            class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
+                            x-cloak
+                            x-show="recovery"
+                            x-on:click="
+                                recovery = false;
+                                $nextTick(() => { $refs.code.focus() })
+                            ">
                         {{ __('Use an authentication code') }}
                     </button>
 

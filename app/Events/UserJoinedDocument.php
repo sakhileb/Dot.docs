@@ -6,11 +6,11 @@ use App\Models\Document;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserJoinedDocument implements ShouldBroadcastNow
+class UserJoinedDocument implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

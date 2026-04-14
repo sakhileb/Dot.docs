@@ -10,6 +10,7 @@ use App\Notifications\CommentPostedNotification;
 use App\Notifications\MentionedInCommentNotification;
 use App\Services\HtmlSanitizer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -44,14 +45,18 @@ class CommentThread extends Component
 
         $comment = Comment::create([
             'document_id' => $this->document->id,
-            'user_id'     => auth()->id(),
+            'user_id'     => Auth::id(),
             'content'     => $sanitizer->clean($this->newComment),
         ]);
 
         $comment->load('user');
         $this->dispatchNotifications($comment);
 
-        CommentPosted::dispatch($this->document, $comment);
+        try {
+            CommentPosted::dispatch($this->document, $comment);
+        } catch (\Throwable) {
+            // Broadcasting unavailable
+        }
 
         $this->newComment     = '';
         $this->mentionResults = [];
@@ -69,7 +74,7 @@ class CommentThread extends Component
 
         $comment = Comment::create([
             'document_id' => $this->document->id,
-            'user_id'     => auth()->id(),
+            'user_id'     => Auth::id(),
             'content'     => $sanitizer->clean($this->replyContent),
             'parent_id'   => $parent->id,
         ]);
@@ -77,7 +82,11 @@ class CommentThread extends Component
         $comment->load('user');
         $this->dispatchNotifications($comment, $parent);
 
-        CommentPosted::dispatch($this->document, $comment);
+        try {
+            CommentPosted::dispatch($this->document, $comment);
+        } catch (\Throwable) {
+            // Broadcasting unavailable
+        }
 
         $this->replyContent   = '';
         $this->replyingTo     = null;
@@ -104,7 +113,7 @@ class CommentThread extends Component
     {
         $comment = Comment::where('document_id', $this->document->id)->findOrFail($commentId);
 
-        if ($comment->user_id !== auth()->id()) {
+        if ($comment->user_id !== Auth::id()) {
             $this->authorize('update', $this->document);
         }
 
@@ -143,14 +152,14 @@ class CommentThread extends Component
         $mentions = $comment->extractMentions();
 
         // Notify document owner (if not commenter)
-        if ($this->document->owner_id !== auth()->id()) {
+        if ($this->document->owner_id !== Auth::id()) {
             $this->document->owner->notify(
                 new CommentPostedNotification($this->document, $comment)
             );
         }
 
         // Notify parent comment author on reply
-        if ($parent && $parent->user_id !== auth()->id()) {
+        if ($parent && $parent->user_id !== Auth::id()) {
             $parent->user->notify(
                 new CommentPostedNotification($this->document, $comment)
             );
@@ -159,7 +168,7 @@ class CommentThread extends Component
         // Notify @mentioned users
         if (! empty($mentions)) {
             User::whereIn('name', $mentions)
-                ->where('id', '!=', auth()->id())
+                ->where('id', '!=', Auth::id())
                 ->get()
                 ->each(fn($user) => $user->notify(
                     new MentionedInCommentNotification($this->document, $comment)

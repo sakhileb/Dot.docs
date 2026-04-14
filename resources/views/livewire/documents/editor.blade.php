@@ -152,14 +152,14 @@
     class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900"
 >
     {{-- AI Components (outside toolbar, at root level) --}}
-    @livewire('documents.ai-assistant', ['document' => $document], key('ai-assistant'), lazy: true)
-    @livewire('documents.ai-chat', ['document' => $document], key('ai-chat'), lazy: true)
-    @livewire('documents.save-as-template', ['document' => $document], key('save-as-template'), lazy: true)
+    <livewire:documents.ai-assistant :document="$document" wire:key="ai-assistant" lazy />
+    <livewire:documents.ai-chat :document="$document" wire:key="ai-chat" lazy />
+    <livewire:documents.save-as-template :document="$document" wire:key="save-as-template" lazy />
 
     {{-- Listen for Ctrl+K to open AI palette --}}
     <div x-data
-         @open-ai-palette.window="$wire.dispatchTo('documents.ai-assistant', 'open-palette')"
-         @open-save-as-template.window="$wire.dispatchTo('documents.save-as-template', 'open')"
+         @open-ai-palette.window="Livewire.dispatchTo('documents.ai-assistant', 'open-palette')"
+         @open-save-as-template.window="Livewire.dispatchTo('documents.save-as-template', 'open')"
          class="hidden"></div>
 
     {{-- Toolbar --}}
@@ -230,7 +230,7 @@
         <span class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
 
         {{-- Voice Typing --}}
-        <div x-data="voiceTyping()" x-init="init()" class="relative">
+        <div x-data="voiceTyping" x-init="init()" class="relative">
             <button @click="toggle()"
                     :title="listening ? 'Stop voice typing' : 'Start voice typing (Web Speech API)'"
                     :class="listening ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 animate-pulse' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'"

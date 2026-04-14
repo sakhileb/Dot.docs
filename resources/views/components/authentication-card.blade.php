@@ -1,7 +1,7 @@
 <div class="w-full">
 
-    {{-- Logo / heading --}}
-    <div class="text-center mb-8">
+    {{-- Logo / heading — only shown on mobile (lg+ already has it in the left branding panel) --}}
+    <div class="text-center mb-8 lg:hidden">
         {{ $logo }}
     </div>
 

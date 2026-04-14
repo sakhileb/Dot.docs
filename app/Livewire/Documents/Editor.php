@@ -10,8 +10,11 @@ use App\Models\Document;
 use App\Services\HtmlSanitizer;
 use App\Services\PresenceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('layouts.app')]
 class Editor extends Component
 {
     use AuthorizesRequests;
@@ -40,10 +43,14 @@ class Editor extends Component
         $this->content = $this->document->content ?? '';
 
         $presence = app(PresenceService::class);
-        $presence->join($this->document, auth()->user());
+        $presence->join($this->document, Auth::user());
         $this->activeUsers = $presence->getMemberList($this->document->id);
 
-        UserJoinedDocument::dispatch($this->document, auth()->user());
+        try {
+            UserJoinedDocument::dispatch($this->document, Auth::user());
+        } catch (\Throwable) {
+            // Broadcasting unavailable — continue without real-time presence
+        }
 
         $this->loadPendingSuggestions();
     }
@@ -58,7 +65,7 @@ class Editor extends Component
             // Store as a suggestion instead of saving directly
             AiSuggestion::create([
                 'document_id'     => $this->document->id,
-                'user_id'         => auth()->id(),
+                'user_id'         => Auth::id(),
                 'suggestion_text' => $content,
                 'created_at'      => now(),
             ]);
@@ -74,8 +81,12 @@ class Editor extends Component
         ]);
         $this->saved = true;
 
-        DocumentUpdated::dispatch($this->document, auth()->user(), $content, $this->document->version);
-        app(PresenceService::class)->heartbeat($this->document, auth()->user());
+        try {
+            DocumentUpdated::dispatch($this->document, Auth::user(), $content, $this->document->version);
+        } catch (\Throwable) {
+            // Broadcasting unavailable — continue without real-time sync
+        }
+        app(PresenceService::class)->heartbeat($this->document, Auth::user());
     }
 
     public function toggleSuggestionMode(): void
@@ -131,15 +142,19 @@ class Editor extends Component
 
     public function heartbeat(): void
     {
-        app(PresenceService::class)->heartbeat($this->document, auth()->user());
+        app(PresenceService::class)->heartbeat($this->document, Auth::user());
         $this->activeUsers = app(PresenceService::class)->getMemberList($this->document->id);
     }
 
     public function leaving(): void
     {
         $presence = app(PresenceService::class);
-        $presence->leave($this->document, auth()->user());
-        UserLeftDocument::dispatch($this->document, auth()->user());
+        $presence->leave($this->document, Auth::user());
+        try {
+            UserLeftDocument::dispatch($this->document, Auth::user());
+        } catch (\Throwable) {
+            // Broadcasting unavailable
+        }
     }
 
     private function loadPendingSuggestions(): void
@@ -158,9 +173,8 @@ class Editor extends Component
             ->toArray();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
-        return view('livewire.documents.editor')
-            ->layout('layouts.app');
+        return view('livewire.documents.editor');
     }
 }

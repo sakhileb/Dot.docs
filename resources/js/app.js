@@ -1,11 +1,8 @@
 import './bootstrap';
 import './editor';
-import Alpine from 'alpinejs';
-import '@hotwired/turbo';
 import _ from 'lodash';
 import { initOfflineSupport } from './offline';
 
-window.Alpine = Alpine;
 window._ = _;
 
 // Register service worker + global online/offline state
@@ -17,9 +14,10 @@ initOfflineSupport(
 /**
  * Voice Typing component (Web Speech API).
  * Injects recognised speech directly into the active TipTap editor.
+ * Registered via alpine:init so Livewire's bundled Alpine is used.
  */
-window.voiceTyping = function () {
-    return {
+document.addEventListener('alpine:init', () => {
+    Alpine.data('voiceTyping', () => ({
         supported: false,
         listening: false,
         recognition: null,
@@ -67,7 +65,5 @@ window.voiceTyping = function () {
                 this.listening = true;
             }
         }
-    };
-};
-
-Alpine.start();
+    }));
+});

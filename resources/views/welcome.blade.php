@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/dot_doc.png" type="image/png">
     <meta name="description" content="dot.doc — AI-powered document creation with real-time collaboration, smart templates, version history, and offline support.">
     <title>dot.doc — Write Smarter. Collaborate Faster.</title>
 
@@ -122,7 +123,7 @@
 <!-- ======================================================== -->
 <!-- NAVBAR -->
 <!-- ======================================================== -->
-<nav class="navbar sticky top-0 z-50">
+<nav class="navbar sticky top-0 z-50" x-data="{ mobileOpen: false }">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
 
@@ -131,14 +132,14 @@
                 <img src="/dot_doc.png" alt="dot.doc" class="h-9 w-auto">
             </a>
 
-            <!-- Nav links -->
+            <!-- Nav links (desktop) -->
             <div class="hidden md:flex items-center gap-8">
                 <a href="#features"    class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</a>
                 <a href="#how-it-works" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">How It Works</a>
                 <a href="#templates"   class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Templates</a>
             </div>
 
-            <!-- Auth CTAs -->
+            <!-- Auth CTAs + mobile toggle -->
             <div class="flex items-center gap-3">
                 @if (Route::has('login'))
                     @auth
@@ -149,7 +150,7 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}"
-                           class="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                           class="hidden sm:inline text-sm font-medium text-slate-400 hover:text-white transition-colors">
                             Log in
                         </a>
                         @if (Route::has('register'))
@@ -161,7 +162,45 @@
                         @endif
                     @endauth
                 @endif
+
+                <!-- Hamburger (mobile only) -->
+                <button @click="mobileOpen = !mobileOpen"
+                        class="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg gap-1.5 transition-colors"
+                        style="color: rgba(255,255,255,0.7);"
+                        aria-label="Toggle navigation">
+                    <span class="block w-5 h-0.5 bg-current transition-all duration-200"
+                          :class="mobileOpen ? 'rotate-45 translate-y-2' : ''"></span>
+                    <span class="block w-5 h-0.5 bg-current transition-all duration-200"
+                          :class="mobileOpen ? 'opacity-0' : ''"></span>
+                    <span class="block w-5 h-0.5 bg-current transition-all duration-200"
+                          :class="mobileOpen ? '-rotate-45 -translate-y-2' : ''"></span>
+                </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div x-show="mobileOpen"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="md:hidden border-t"
+         style="background: rgba(8,15,30,0.97); border-color: rgba(255,255,255,0.07);"
+         x-cloak>
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+            <a href="#features"     @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors">Features</a>
+            <a href="#how-it-works" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors">How It Works</a>
+            <a href="#templates"    @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors">Templates</a>
+            @if (Route::has('login'))
+                @guest
+                    <div class="border-t mt-2 pt-3" style="border-color: rgba(255,255,255,0.07);">
+                        <a href="{{ route('login') }}" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors block">Log in</a>
+                    </div>
+                @endguest
+            @endif
         </div>
     </div>
 </nav>
@@ -170,7 +209,7 @@
 <!-- ======================================================== -->
 <!-- HERO -->
 <!-- ======================================================== -->
-<section class="hero-bg relative overflow-hidden min-h-screen flex flex-col justify-center pt-6 pb-24">
+<section class="hero-bg relative overflow-hidden flex flex-col justify-center pt-6 pb-24" style="min-height: calc(100vh - 4rem);">
 
     <!-- Dot grid overlay -->
     <div class="dot-grid absolute inset-0 pointer-events-none" aria-hidden="true"></div>
@@ -317,7 +356,10 @@
                 <div class="text-sm text-slate-500">Powered writing assistant</div>
             </div>
             <div>
-                <div class="text-4xl font-black text-white mb-2">RT</div>
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></div>
+                    <span class="text-4xl font-black text-white">Live</span>
+                </div>
                 <div class="text-sm text-slate-500">Real-time collaboration</div>
             </div>
             <div>
@@ -417,6 +459,94 @@
 
 
 <!-- ======================================================== -->
+<!-- TEMPLATES -->
+<!-- ======================================================== -->
+<section id="templates" class="py-28" style="background: #0d1528;">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <span class="text-xs font-black uppercase tracking-widest" style="color: #F5C110;">Ready-to-use Templates</span>
+            <h2 class="mt-3 text-4xl font-extrabold text-white">Start faster with smart templates</h2>
+            <p class="mt-4 text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.55);">Choose from a growing library of professionally crafted templates — or save your own.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+            <!-- Resume -->
+            <div class="glass rounded-2xl p-6 flex flex-col gap-3 hover:border-sky-500/40 transition-colors">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: rgba(56,151,211,0.15);" aria-hidden="true">📋</div>
+                <span class="text-[11px] font-bold uppercase tracking-widest" style="color: #3897D3;">Resume</span>
+                <h3 class="text-sm font-bold text-white leading-snug">Professional Resume</h3>
+                <p class="text-xs leading-relaxed flex-1" style="color: rgba(255,255,255,0.50);">A clean, professional resume template with sections for experience, education, and skills.</p>
+                @auth
+                    <a href="{{ url('/documents') }}" class="mt-1 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="mt-1 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @endauth
+            </div>
+
+            <!-- Project Proposal -->
+            <div class="glass rounded-2xl p-6 flex flex-col gap-3 hover:border-amber-400/40 transition-colors">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: rgba(245,193,16,0.12);" aria-hidden="true">📊</div>
+                <span class="text-[11px] font-bold uppercase tracking-widest" style="color: #F5C110;">Proposal</span>
+                <h3 class="text-sm font-bold text-white leading-snug">Project Proposal</h3>
+                <p class="text-xs leading-relaxed flex-1" style="color: rgba(255,255,255,0.50);">A structured proposal with executive summary, goals, timeline, and budget sections.</p>
+                @auth
+                    <a href="{{ url('/documents') }}" class="mt-1 text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="mt-1 text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @endauth
+            </div>
+
+            <!-- Meeting Notes -->
+            <div class="glass rounded-2xl p-6 flex flex-col gap-3 hover:border-emerald-400/40 transition-colors">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: rgba(16,185,129,0.12);" aria-hidden="true">📝</div>
+                <span class="text-[11px] font-bold uppercase tracking-widest" style="color: #10b981;">Notes</span>
+                <h3 class="text-sm font-bold text-white leading-snug">Meeting Notes</h3>
+                <p class="text-xs leading-relaxed flex-1" style="color: rgba(255,255,255,0.50);">Capture agenda, attendees, discussion points, and action items with due dates.</p>
+                @auth
+                    <a href="{{ url('/documents') }}" class="mt-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="mt-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @endauth
+            </div>
+
+            <!-- Blog Post -->
+            <div class="glass rounded-2xl p-6 flex flex-col gap-3 hover:border-violet-400/40 transition-colors">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: rgba(139,92,246,0.12);" aria-hidden="true">✍️</div>
+                <span class="text-[11px] font-bold uppercase tracking-widest" style="color: #8b5cf6;">Blog</span>
+                <h3 class="text-sm font-bold text-white leading-snug">Blog Post</h3>
+                <p class="text-xs leading-relaxed flex-1" style="color: rgba(255,255,255,0.50);">A full-length blog post template with introduction, body sections, and a compelling CTA.</p>
+                @auth
+                    <a href="{{ url('/documents') }}" class="mt-1 text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="mt-1 text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1">
+                        Use template <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @endauth
+            </div>
+
+        </div>
+
+        <p class="text-center mt-10 text-xs" style="color: rgba(255,255,255,0.30);">+ Save your own custom templates from any document</p>
+    </div>
+</section>
+
+
+<!-- ======================================================== -->
 <!-- CTA BANNER -->
 <!-- ======================================================== -->
 <section class="py-24 cta-grad relative overflow-hidden">
@@ -461,6 +591,7 @@
             <nav class="flex flex-wrap items-center justify-center gap-6 text-sm" aria-label="Footer navigation">
                 <a href="#features"    class="hover:text-white transition-colors">Features</a>
                 <a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a>
+                <a href="#templates"   class="hover:text-white transition-colors">Templates</a>
                 @if (Route::has('login'))
                     <a href="{{ route('login') }}"    class="hover:text-white transition-colors">Sign In</a>
                 @endif
