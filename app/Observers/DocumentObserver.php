@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Document;
 use App\Models\DocumentVersion;
+use App\Services\WebhookService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -34,6 +35,9 @@ class DocumentObserver
                 'created_by'       => auth()->id() ?? $document->owner_id,
                 'created_at'       => now(),
             ]);
+
+            // Fire on_save webhooks asynchronously (best-effort)
+            app(WebhookService::class)->fire($document, 'on_save');
         }
     }
 

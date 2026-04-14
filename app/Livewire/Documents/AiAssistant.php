@@ -3,6 +3,7 @@
 namespace App\Livewire\Documents;
 
 use App\Models\Document;
+use App\Models\DocumentSlashCommand;
 use App\Services\AiService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\On;
@@ -67,6 +68,22 @@ class AiAssistant extends Component
         $this->command     = '';
         $this->result      = '';
         $this->showResult  = false;
+
+        // Merge custom user/team commands into the suggestion list
+        $user    = auth()->user();
+        $customs = DocumentSlashCommand::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+                if ($user->currentTeam) {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('team_id', $user->currentTeam->id)
+                           ->where('share_with_team', true);
+                    });
+                }
+            })
+            ->get()
+            ->mapWithKeys(fn ($cmd) => ["/{$cmd->name}" => $cmd->description ?? 'Custom command']);
+
+        $this->commandSuggestions = array_merge($this->commandSuggestions, $customs->all());
     }
 
     public function closePalette(): void
@@ -129,7 +146,29 @@ class AiAssistant extends Component
 
     private function resolveCommand(AiService $ai, string $html): array
     {
-        return $ai->runCommand($this->command, $html);
+        $command = trim($this->command);
+
+        // Check if it matches a custom slash command for the current user
+        $user       = auth()->user();
+        $cmdName    = ltrim(explode(' ', $command)[0], '/');
+
+        $custom = DocumentSlashCommand::where('name', $cmdName)
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+                if ($user->currentTeam) {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('team_id', $user->currentTeam->id)
+                           ->where('share_with_team', true);
+                    });
+                }
+            })
+            ->first();
+
+        if ($custom) {
+            return $ai->customCommand($custom->prompt_template, $html);
+        }
+
+        return $ai->runCommand($command, $html);
     }
 
     public function applyResult(): void

@@ -231,6 +231,27 @@ class AiService
     }
 
     /**
+     * Execute a user-defined custom slash command.
+     * Replaces {content} in the prompt template with the document plain text.
+     */
+    public function customCommand(string $promptTemplate, string $html): array
+    {
+        $text   = $this->sanitizer->toPlainText($html);
+        $prompt = str_replace('{content}', $text, $promptTemplate);
+
+        $response = OpenAI::chat()->create([
+            'model'    => $this->model,
+            'messages' => [
+                ['role' => 'system', 'content' => 'You are an AI writing assistant embedded in a document editor. Follow the user\'s instruction precisely.'],
+                ['role' => 'user',   'content' => $prompt],
+            ],
+            'max_tokens' => 2000,
+        ]);
+
+        return ['type' => 'replace', 'content' => $response->choices[0]->message->content ?? ''];
+    }
+
+    /**
      * Save a suggestion to the database.
      */
     public function saveSuggestion(Document $document, int $userId, string $text): AiSuggestion

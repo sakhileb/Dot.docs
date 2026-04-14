@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Services\WebhookService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\RateLimiter;
@@ -27,13 +28,18 @@ class DocumentExportController extends Controller
 
         $safeTitle = Str::slug($document->title ?: 'document');
 
-        return match ($format) {
+        $response = match ($format) {
             'pdf'      => $this->exportPdf($document, $safeTitle),
             'word'     => $this->exportWord($document, $safeTitle),
             'html'     => $this->exportHtml($document, $safeTitle),
             'markdown' => $this->exportMarkdown($document, $safeTitle),
             default    => abort(404, 'Unknown export format.'),
         };
+
+        // Fire on_export webhooks (best-effort, after response is built)
+        app(WebhookService::class)->fire($document, 'on_export', ['format' => $format]);
+
+        return $response;
     }
 
     private function exportPdf(Document $document, string $safeTitle): \Symfony\Component\HttpFoundation\Response

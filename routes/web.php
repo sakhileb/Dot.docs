@@ -7,6 +7,7 @@ use App\Livewire\Documents\DocumentSettings;
 use App\Livewire\Documents\Editor;
 use App\Livewire\Documents\Index;
 use App\Livewire\Documents\ShareManager;
+use App\Livewire\Documents\SlashCommandManager;
 use App\Livewire\Documents\VersionHistory;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,9 @@ Route::middleware([
     Route::get('/documents/{uuid}/settings', DocumentSettings::class)->name('documents.settings');
     Route::get('/documents/{uuid}/share', ShareManager::class)->name('documents.share');
     Route::get('/documents/{uuid}/history', VersionHistory::class)->name('documents.history');
+
+    // Slash commands (user-level, not per-document)
+    Route::get('/settings/slash-commands', SlashCommandManager::class)->name('slash-commands.index');
 
     // Image uploads inside documents
     Route::post('/documents/{uuid}/images', [DocumentImageController::class, 'store'])

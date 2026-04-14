@@ -59,6 +59,11 @@ class Document extends Model
         return $this->hasMany(AiSuggestion::class);
     }
 
+    public function webhooks(): HasMany
+    {
+        return $this->hasMany(DocumentWebhook::class);
+    }
+
     /**
      * Return cached content for public documents (5-minute TTL).
      * Private documents are returned directly from the model.

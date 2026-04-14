@@ -2,11 +2,20 @@
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Documents</h1>
-        <button wire:click="$set('showCreateModal', true)"
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-            + New Document
-        </button>
+        <div class="flex items-center gap-2">
+            <button @click="$dispatch('open-template-gallery')"
+                    class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                📄 From Template
+            </button>
+            <button wire:click="$set('showCreateModal', true)"
+                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
+                + New Document
+            </button>
+        </div>
     </div>
+
+    {{-- Template Gallery --}}
+    @livewire('documents.template-gallery', key('template-gallery'))
 
     {{-- Search & Filter --}}
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
@@ -81,6 +90,9 @@
             @endif
         </div>
     @endif
+
+    {{-- Open gallery via window event --}}
+    <div x-data @open-template-gallery.window="$wire.dispatchTo('documents.template-gallery', 'open')" class="hidden"></div>
 
     {{-- Create Modal --}}
     @if($showCreateModal)

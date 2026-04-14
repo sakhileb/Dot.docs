@@ -245,20 +245,42 @@
 ## Phase 11: Additional Features (Stretch Goals)
 
 ### 11.1 Document Templates Gallery
-- [ ] Pre-built templates (Resume, Proposal, Meeting Notes, Blog Post)
-- [ ] Save current document as template for team
+- [x] Pre-built templates (Resume, Proposal, Meeting Notes, Blog Post)
+- [x] Save current document as template for team
 
 ### 11.2 Voice Typing
-- [ ] Integrate Web Speech API (frontend transcription)
-- [ ] Send transcribed text to AI for formatting
+- [x] Integrate Web Speech API (frontend transcription)
+- [x] Send transcribed text to AI for formatting
 
 ### 11.3 Offline Mode
-- [ ] Service Worker + IndexedDB for offline editing
-- [ ] Sync when connection restored (background sync)
+- [x] Service Worker + IndexedDB for offline editing
+- [x] Sync when connection restored (background sync)
 
 ### 11.4 Add-ons / Plugins System
-- [ ] Allow custom slash commands
-- [ ] Webhook triggers (on save, on export)
+- [x] Allow custom slash commands
+- [x] Webhook triggers (on save, on export)
+
+---
+
+## Phase 12: Branding & Landing Page
+
+### 12.1 Logo & Brand Identity
+- [x] Replace all platform logos with custom `dot_doc.png` brand mark
+- [x] Update `application-mark.blade.php` (navbar icon)
+- [x] Update `application-logo.blade.php` (full logo)
+- [x] Update `authentication-card-logo.blade.php` (login/register pages)
+- [x] Copy logo to `public/dot_doc.png` for web-accessible serving
+
+### 12.2 Welcome / Landing Page Redesign
+- [x] Replace default Laravel welcome page with branded landing page
+- [x] Sticky navbar — logo, nav links, Login + Get Started CTAs
+- [x] Hero section — gradient headline, description, dual CTAs, editor chrome mockup
+- [x] Stats strip — ∞ docs, AI-powered, real-time, 100% offline
+- [x] Features grid — 6 cards (AI, Collaboration, Templates, Version History, Offline, Export)
+- [x] How It Works — 3 numbered steps
+- [x] CTA banner — `amber-500 → sky-600` gradient with sign-up/login buttons
+- [x] Footer — logo, nav links, copyright
+- [x] Figtree font, brand color palette (Gold `#F5C110` / Sky Blue `#3897D3`)
 
 ---
 

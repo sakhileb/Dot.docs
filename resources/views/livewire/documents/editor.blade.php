@@ -6,6 +6,8 @@
         heartbeatInterval: null,
         isTyping: false,
         typingTimeout: null,
+        isOffline: !navigator.onLine,
+        docUuid: '{{ $document->uuid }}',
         remoteVersion: @entangle('document.version').live,
 
         init() {
@@ -20,7 +22,12 @@
                     clearTimeout(this.typingTimeout);
                     this.typingTimeout = setTimeout(() => { this.isTyping = false; }, 1000);
 
-                    // Debounced autosave
+                    // Always persist draft to IndexedDB (works offline too)
+                    if (window.offlineDraft) {
+                        window.offlineDraft.saveDraft(this.docUuid, html);
+                    }
+
+                    // Debounced autosave (skipped when offline — SW queues it)
                     clearTimeout(this.saveTimeout);
                     this.saveTimeout = setTimeout(() => {
                         @this.saveContent(html);
@@ -28,7 +35,20 @@
                 }
             });
 
+            // Restore IndexedDB draft if newer than server content
+            this.restoreDraftIfNewer();
+
             this.setupEcho();
+
+            // Online / offline events (dispatched by offline.js initOfflineSupport)
+            window.addEventListener('app-offline', () => { this.isOffline = true; });
+            window.addEventListener('app-online',  () => {
+                this.isOffline = false;
+                // Flush current draft to server now that we're back online
+                const html = this.editor?.getHTML();
+                if (html) @this.saveContent(html);
+                if (window.offlineDraft) window.offlineDraft.clearDraft(this.docUuid);
+            });
 
             // Heartbeat every 60 seconds to keep presence alive
             this.heartbeatInterval = setInterval(() => {
@@ -39,6 +59,24 @@
             window.addEventListener('beforeunload', () => {
                 @this.leaving();
             });
+        },
+
+        async restoreDraftIfNewer() {
+            if (!window.offlineDraft) return;
+            try {
+                const draft = await window.offlineDraft.loadDraft(this.docUuid);
+                if (draft && draft !== this.editor?.getHTML()) {
+                    // Only prompt if draft appears to differ from current server content
+                    const serverLen = (this.editor?.getText() || '').length;
+                    const draftLen  = draft.replace(/<[^>]+>/g, '').length;
+                    if (draftLen > serverLen) {
+                        if (confirm('An unsaved offline draft was found. Restore it?')) {
+                            this.editor.commands.setContent(draft, false);
+                        }
+                        window.offlineDraft.clearDraft(this.docUuid);
+                    }
+                }
+            } catch (_) {}
         },
 
         setupEcho() {
@@ -92,12 +130,23 @@
                 const html = this.editor.getHTML();
                 @this.saveContent(html);
             }
+        },
+
+        // Insert voice-transcribed text at current cursor position
+        insertVoiceText(text) {
+            if (!this.editor || !text) return;
+            this.editor.commands.focus();
+            this.editor.commands.insertContent(text + ' ');
+            const html = this.editor.getHTML();
+            clearTimeout(this.saveTimeout);
+            this.saveTimeout = setTimeout(() => { @this.saveContent(html); }, 1500);
         }
     }"
     x-init="init()"
     x-destroy="destroy()"
     @ai-apply.window="applyAiContent('replace', $event.detail.content)"
     @suggestion-accepted.window="if (editor) { editor.commands.setContent($event.detail.content, true); }"
+    @voice-transcript.window="insertVoiceText($event.detail.text)"
     @keydown.ctrl.k.window.prevent="$dispatch('open-ai-palette')"
     @keydown.meta.k.window.prevent="$dispatch('open-ai-palette')"
     class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900"
@@ -105,10 +154,12 @@
     {{-- AI Components (outside toolbar, at root level) --}}
     @livewire('documents.ai-assistant', ['document' => $document], key('ai-assistant'), lazy: true)
     @livewire('documents.ai-chat', ['document' => $document], key('ai-chat'), lazy: true)
+    @livewire('documents.save-as-template', ['document' => $document], key('save-as-template'), lazy: true)
 
     {{-- Listen for Ctrl+K to open AI palette --}}
     <div x-data
          @open-ai-palette.window="$wire.dispatchTo('documents.ai-assistant', 'open-palette')"
+         @open-save-as-template.window="$wire.dispatchTo('documents.save-as-template', 'open')"
          class="hidden"></div>
 
     {{-- Toolbar --}}
@@ -176,6 +227,20 @@
         <button @click="editor.chain().focus().redo().run()" title="Redo"
                 class="p-1.5 rounded transition text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">↪</button>
 
+        <span class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
+
+        {{-- Voice Typing --}}
+        <div x-data="voiceTyping()" x-init="init()" class="relative">
+            <button @click="toggle()"
+                    :title="listening ? 'Stop voice typing' : 'Start voice typing (Web Speech API)'"
+                    :class="listening ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 animate-pulse' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'"
+                    class="p-1.5 rounded transition text-sm flex items-center gap-1"
+                    x-show="supported">
+                🎤 <span class="text-xs hidden sm:inline" x-text="listening ? 'Listening…' : 'Voice'"></span>
+            </button>
+            <span x-show="!supported" class="hidden" title="Speech recognition not supported in this browser"></span>
+        </div>
+
         {{-- Right side: presence + status + nav --}}
         <div class="ml-auto flex items-center gap-3">
             {{-- Active user avatars --}}
@@ -201,12 +266,17 @@
 
             {{-- Typing / save indicator --}}
             <div class="flex items-center gap-1 text-xs text-gray-400">
-                <span x-show="isTyping" class="flex items-center gap-1">
+                <span x-show="isOffline"
+                      class="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded font-medium"
+                      title="You are offline. Edits are saved locally and will sync when back online.">
+                    ⚠ Offline
+                </span>
+                <span x-show="isTyping && !isOffline" class="flex items-center gap-1">
                     <span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
                     editing
                 </span>
                 <span wire:loading wire:target="saveContent,saveTitle" class="animate-pulse">Saving…</span>
-                <span wire:loading.remove wire:target="saveContent,saveTitle" x-show="!isTyping" class="text-green-500">
+                <span wire:loading.remove wire:target="saveContent,saveTitle" x-show="!isTyping && !isOffline" class="text-green-500">
                     @if($saved) ✓ Saved @endif
                 </span>
             </div>
@@ -325,6 +395,11 @@
 
             <a href="{{ route('documents.settings', $document->uuid) }}"
                class="text-xs text-gray-500 hover:underline">Settings</a>
+            <button @click="$dispatch('open-save-as-template')"
+                    class="text-xs text-gray-500 hover:underline hidden sm:block"
+                    title="Save this document as a reusable template">
+                📄 Template
+            </button>
             <a href="{{ route('documents.index') }}"
                class="text-xs text-gray-500 hover:underline">← All Docs</a>
         </div>

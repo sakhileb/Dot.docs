@@ -55,6 +55,11 @@
         </form>
     </div>
 
+    {{-- Webhooks --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        @livewire('documents.webhook-manager', ['document' => $document], key('webhook-manager'))
+    </div>
+
     {{-- Danger Zone --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-red-200 dark:border-red-900 p-6">
         <h2 class="text-base font-semibold text-red-600 dark:text-red-400 mb-4">Danger Zone</h2>
