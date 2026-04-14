@@ -24,8 +24,7 @@ class DocumentObserver
     public function updated(Document $document): void
     {
         // Bust permission + content caches
-        Cache::tags(["doc_{$document->id}"])->flush();
-        Cache::forget("doc.content.{$document->uuid}");
+        $this->bustDocumentCache($document);
 
         if ($document->wasChanged('content') && $document->content !== null) {
             DocumentVersion::create([
@@ -43,8 +42,22 @@ class DocumentObserver
 
     public function deleted(Document $document): void
     {
-        Cache::tags(["doc_{$document->id}"])->flush();
+        $this->bustDocumentCache($document);
+    }
+
+    private function bustDocumentCache(Document $document): void
+    {
+        // Forget all per-user permission cache entries for this document.
+        // We iterate over users who have a relationship with this document.
+        $userIds = collect([$document->owner_id])
+            ->merge($document->collaborators()->pluck('user_id'))
+            ->unique();
+
+        foreach ($userIds as $userId) {
+            Cache::forget("doc.view.{$userId}.{$document->id}");
+            Cache::forget("doc.update.{$userId}.{$document->id}");
+        }
+
         Cache::forget("doc.content.{$document->uuid}");
     }
 }
-

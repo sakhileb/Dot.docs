@@ -31,7 +31,7 @@ class DocumentPolicy
             return true;
         }
 
-        return Cache::tags(["doc_{$document->id}"])->remember(
+        return Cache::remember(
             "doc.view.{$user->id}.{$document->id}",
             900,
             function () use ($user, $document) {
@@ -61,7 +61,7 @@ class DocumentPolicy
             return true;
         }
 
-        return Cache::tags(["doc_{$document->id}"])->remember(
+        return Cache::remember(
             "doc.update.{$user->id}.{$document->id}",
             900,
             function () use ($user, $document) {
