@@ -4,6 +4,11 @@
             <x-authentication-card-logo />
         </x-slot>
 
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-extrabold text-slate-900">Set new password</h1>
+            <p class="text-sm text-slate-500 mt-1">Choose a strong password for your account</p>
+        </div>
+
         <x-validation-errors class="mb-4" />
 
         <form method="POST" action="{{ route('password.update') }}">

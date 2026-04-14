@@ -4,6 +4,11 @@
             <x-authentication-card-logo />
         </x-slot>
 
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-extrabold text-slate-900">Welcome back</h1>
+            <p class="text-sm text-slate-500 mt-1">Sign in to your dot.doc account</p>
+        </div>
+
         <x-validation-errors class="mb-4" />
 
         @session('status')
@@ -34,7 +39,7 @@
 
             <div class="flex items-center justify-end mt-4">
                 @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                    <a class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors" href="{{ route('password.request') }}">
                         {{ __('Forgot your password?') }}
                     </a>
                 @endif
