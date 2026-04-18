@@ -16,6 +16,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/*.tar.gz
 /storage/*.key
 /storage/pail
 /vendor
