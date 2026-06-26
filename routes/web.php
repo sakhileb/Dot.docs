@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\EcosystemAuthController;
+
 use App\Http\Controllers\DocumentExportController;
 use App\Http\Controllers\DocumentImageController;
 use App\Http\Controllers\DocumentImportController;
@@ -11,11 +13,14 @@ use App\Livewire\Documents\SlashCommandManager;
 use App\Livewire\Documents\VersionHistory;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/auth/ecosystem', [EcosystemAuthController::class, 'handle'])->name('auth.ecosystem');
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 // Public shared document view (with optional password & expiry enforcement)
+
 Route::get('/shared/{uuid}', function (string $uuid) {
     $document = \App\Models\Document::where('uuid', $uuid)
         ->where('is_public', true)
@@ -34,6 +39,7 @@ Route::get('/shared/{uuid}', function (string $uuid) {
     return view('documents.shared', compact('document'));
 })->name('documents.shared');
 
+
 Route::post('/shared/{uuid}', function (string $uuid, \Illuminate\Http\Request $request) {
     $document = \App\Models\Document::where('uuid', $uuid)
         ->where('is_public', true)
@@ -51,6 +57,7 @@ Route::post('/shared/{uuid}', function (string $uuid, \Illuminate\Http\Request $
 
     return view('documents.shared', compact('document'));
 })->name('documents.shared.unlock');
+
 
 Route::middleware([
     'auth:sanctum',
