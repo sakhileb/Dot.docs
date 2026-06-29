@@ -1,114 +1,174 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-white leading-tight">Dashboard</h2>
-            <a href="{{ route('documents.index') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#3897D3] hover:bg-[#2a7bbf] text-white text-sm font-semibold transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <h1 style="font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;color:#f4f4f5;margin:0 0 0.2rem;">Document Dashboard</h1>
+                <p style="margin:0;font-size:0.78rem;color:#71717a;">Your writing workspace — create, collaborate, and publish.</p>
+            </div>
+            <a href="{{ route('documents.index') }}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;border-radius:9999px;background:linear-gradient(135deg,#0284c7,#0369a1);font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;color:#fff;text-decoration:none;box-shadow:0 6px 18px rgba(2,132,199,0.3);">
+                <span class="material-symbols-rounded" style="font-size:17px;">add_circle</span>
                 New Document
             </a>
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div style="padding:2rem 2.5rem 3rem;">
 
-            @php
-                $recentDocs = \App\Models\Document::where('owner_id', auth()->id())
-                    ->orderBy('updated_at', 'desc')
-                    ->limit(8)
-                    ->get();
-
-                $sharedDocs = \App\Models\Document::whereHas('collaborators', function ($q) {
-                    $q->where('user_id', auth()->id());
-                })->where('owner_id', '!=', auth()->id())
-                    ->orderBy('updated_at', 'desc')
-                    ->limit(4)
-                    ->get();
-            @endphp
+        {{-- KPI Row --}}
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem;">
 
             {{-- My Documents --}}
-            <section class="mb-10">
-                <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-4">My Documents</h3>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.4rem 1.5rem;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:9999px;background:rgba(2,132,199,0.08);"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <span style="font-size:0.7rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;font-family:'Syne',sans-serif;">My Documents</span>
+                    <div style="width:34px;height:34px;border-radius:9px;background:rgba(2,132,199,0.15);display:flex;align-items:center;justify-content:center;">
+                        <span class="material-symbols-rounded" style="font-size:18px;color:#0284c7;">description</span>
+                    </div>
+                </div>
+                <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f4f4f5;line-height:1;">{{ $myDocs }}</div>
+                <div style="margin-top:0.5rem;font-size:0.72rem;color:#5a6585;">Total authored</div>
+            </div>
 
-                @if($recentDocs->isEmpty())
-                    <div class="rounded-xl border border-white/10 bg-white/5 px-8 py-16 text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
-                        <p class="text-gray-400 text-sm mb-6">You haven't created any documents yet.</p>
-                        <a href="{{ route('documents.index') }}"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#3897D3] hover:bg-[#2a7bbf] text-white text-sm font-semibold transition">
-                            Create your first document
-                        </a>
+            {{-- Shared with Me --}}
+            <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.4rem 1.5rem;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:9999px;background:rgba(99,102,241,0.08);"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <span style="font-size:0.7rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;font-family:'Syne',sans-serif;">Shared with Me</span>
+                    <div style="width:34px;height:34px;border-radius:9px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;">
+                        <span class="material-symbols-rounded" style="font-size:18px;color:#818cf8;">group</span>
                     </div>
-                @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        @foreach($recentDocs as $doc)
-                            <a href="{{ route('documents.edit', $doc->uuid) }}"
-                               class="group flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-sky-400/40 p-5 transition">
-                                <div>
-                                    <div class="flex items-start justify-between mb-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3897D3] shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                        </svg>
-                                        @if($doc->collaborators->count() > 0)
-                                            <span class="inline-flex items-center gap-1 text-xs text-gray-400 bg-white/5 rounded-full px-2 py-0.5">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                                </svg>
-                                                {{ $doc->collaborators->count() }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                    <h4 class="font-semibold text-white text-sm leading-snug group-hover:text-sky-300 transition line-clamp-2">
-                                        {{ $doc->title ?: 'Untitled Document' }}
-                                    </h4>
-                                </div>
-                                <p class="mt-4 text-xs text-gray-500">
-                                    {{ $doc->updated_at->diffForHumans() }}
-                                </p>
-                            </a>
-                        @endforeach
-                    </div>
+                </div>
+                <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f4f4f5;line-height:1;">{{ $sharedDocs }}</div>
+                <div style="margin-top:0.5rem;font-size:0.72rem;color:#5a6585;">Collaborating on</div>
+            </div>
 
-                    <div class="mt-4 text-right">
-                        <a href="{{ route('documents.index') }}" class="text-sm text-sky-400 hover:text-sky-300 transition">
-                            View all documents &rarr;
-                        </a>
+            {{-- Public Docs --}}
+            <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.4rem 1.5rem;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:9999px;background:rgba(34,197,94,0.08);"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <span style="font-size:0.7rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;font-family:'Syne',sans-serif;">Public Docs</span>
+                    <div style="width:34px;height:34px;border-radius:9px;background:rgba(34,197,94,0.15);display:flex;align-items:center;justify-content:center;">
+                        <span class="material-symbols-rounded" style="font-size:18px;color:#22c55e;">public</span>
                     </div>
-                @endif
-            </section>
+                </div>
+                <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f4f4f5;line-height:1;">{{ $publicDocs }}</div>
+                <div style="margin-top:0.5rem;font-size:0.72rem;color:#5a6585;">Publicly accessible</div>
+            </div>
 
-            {{-- Shared With Me --}}
-            @if($sharedDocs->isNotEmpty())
-                <section>
-                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-4">Shared With Me</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        @foreach($sharedDocs as $doc)
-                            <a href="{{ route('documents.edit', $doc->uuid) }}"
-                               class="group flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#F5C110]/40 p-5 transition">
-                                <div>
-                                    <div class="flex items-start justify-between mb-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#F5C110] shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                        </svg>
-                                        <span class="text-xs text-gray-400">{{ $doc->owner->name }}</span>
-                                    </div>
-                                    <h4 class="font-semibold text-white text-sm leading-snug group-hover:text-yellow-300 transition line-clamp-2">
-                                        {{ $doc->title ?: 'Untitled Document' }}
-                                    </h4>
-                                </div>
-                                <p class="mt-4 text-xs text-gray-500">
-                                    {{ $doc->updated_at->diffForHumans() }}
-                                </p>
-                            </a>
-                        @endforeach
+            {{-- AI Suggestions Pending --}}
+            <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.4rem 1.5rem;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:9999px;background:rgba(245,193,16,0.08);"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <span style="font-size:0.7rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;font-family:'Syne',sans-serif;">AI Suggestions</span>
+                    <div style="width:34px;height:34px;border-radius:9px;background:rgba(245,193,16,0.15);display:flex;align-items:center;justify-content:center;">
+                        <span class="material-symbols-rounded" style="font-size:18px;color:#f5c110;">auto_awesome</span>
                     </div>
-                </section>
-            @endif
+                </div>
+                <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f4f4f5;line-height:1;">{{ $aiSuggestions }}</div>
+                <div style="margin-top:0.5rem;font-size:0.72rem;color:#5a6585;">Awaiting review</div>
+            </div>
         </div>
+
+        {{-- Recent Documents --}}
+        <section style="margin-bottom:2.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+                <h2 style="font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.14em;margin:0;">Recent Documents</h2>
+                <a href="{{ route('documents.index') }}" style="font-size:0.78rem;color:#0284c7;text-decoration:none;font-weight:600;">View all &rarr;</a>
+            </div>
+
+            @if($recentDocs->isEmpty())
+                <div style="background:#141416;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:3.5rem 2rem;text-align:center;">
+                    <span class="material-symbols-rounded" style="font-size:48px;color:#2a3450;display:block;margin-bottom:1rem;">description</span>
+                    <p style="color:#5a6585;font-size:0.875rem;margin:0 0 1.25rem;">No documents yet. Start writing your first doc.</p>
+                    <a href="{{ route('documents.index') }}" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.25rem;border-radius:9999px;background:linear-gradient(135deg,#0284c7,#0369a1);font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:#fff;text-decoration:none;">
+                        <span class="material-symbols-rounded" style="font-size:16px;">add_circle</span>
+                        Create Document
+                    </a>
+                </div>
+            @else
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+                    @foreach($recentDocs as $doc)
+                        <div style="background:#141416;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(2,132,199,0.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+                            <div>
+                                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.85rem;">
+                                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(2,132,199,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                        <span class="material-symbols-rounded" style="font-size:18px;color:#0284c7;">description</span>
+                                    </div>
+                                    @if($doc->collaborators->count() > 0)
+                                        <span style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.65rem;color:#71717a;background:rgba(255,255,255,0.05);border-radius:9999px;padding:0.2rem 0.55rem;border:1px solid rgba(255,255,255,0.06);">
+                                            <span class="material-symbols-rounded" style="font-size:12px;">group</span>
+                                            {{ $doc->collaborators->count() }}
+                                        </span>
+                                    @endif
+                                    @if($doc->is_public)
+                                        <span style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.65rem;color:#22c55e;background:rgba(34,197,94,0.1);border-radius:9999px;padding:0.2rem 0.55rem;border:1px solid rgba(34,197,94,0.2);">
+                                            <span class="material-symbols-rounded" style="font-size:12px;">public</span>
+                                            Public
+                                        </span>
+                                    @endif
+                                </div>
+                                <h4 style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;color:#f4f4f5;margin:0 0 0.5rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                    {{ $doc->title ?: 'Untitled Document' }}
+                                </h4>
+                                <div style="display:flex;align-items:center;gap:0.35rem;margin-bottom:0.75rem;">
+                                    <span style="font-size:0.65rem;font-weight:600;color:#5a6585;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:4px;padding:0.15rem 0.45rem;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">v{{ $doc->version }}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem;padding-top:0.85rem;border-top:1px solid rgba(67,70,86,0.15);">
+                                <span style="font-size:0.7rem;color:#5a6585;">{{ $doc->updated_at->diffForHumans() }}</span>
+                                <a href="{{ route('documents.edit', $doc->uuid) }}" style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.72rem;font-weight:700;color:#0284c7;text-decoration:none;font-family:'Syne',sans-serif;" onmouseover="this.style.color='#7dd3fc'" onmouseout="this.style.color='#0284c7'">
+                                    Open
+                                    <span class="material-symbols-rounded" style="font-size:14px;">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        {{-- Shared with Me --}}
+        @if($recentShared->isNotEmpty())
+        <section>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+                <h2 style="font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.14em;margin:0;">Shared with Me</h2>
+            </div>
+            <div style="background:#141416;border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;">
+                @foreach($recentShared as $collab)
+                    @if($collab->document)
+                    <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;{{ !$loop->last ? 'border-bottom:1px solid rgba(67,70,86,0.15);' : '' }}" onmouseover="this.style.background='rgba(2,132,199,0.04)'" onmouseout="this.style.background='transparent'">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span class="material-symbols-rounded" style="font-size:18px;color:#818cf8;">description</span>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;color:#f4f4f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                {{ $collab->document->title ?: 'Untitled Document' }}
+                            </div>
+                            <div style="font-size:0.72rem;color:#5a6585;margin-top:0.15rem;">
+                                by {{ $collab->document->owner?->name ?? 'Unknown' }}
+                            </div>
+                        </div>
+                        @php
+                            $roleColors = [
+                                'admin'  => ['bg' => 'rgba(245,193,16,0.12)',  'color' => '#f5c110',  'border' => 'rgba(245,193,16,0.25)'],
+                                'editor' => ['bg' => 'rgba(34,197,94,0.12)',   'color' => '#22c55e',  'border' => 'rgba(34,197,94,0.25)'],
+                                'viewer' => ['bg' => 'rgba(129,140,248,0.12)', 'color' => '#818cf8',  'border' => 'rgba(129,140,248,0.25)'],
+                            ];
+                            $rc = $roleColors[$collab->role] ?? $roleColors['viewer'];
+                        @endphp
+                        <span style="font-size:0.65rem;font-weight:700;color:{{ $rc['color'] }};background:{{ $rc['bg'] }};border:1px solid {{ $rc['border'] }};border-radius:9999px;padding:0.2rem 0.65rem;text-transform:uppercase;letter-spacing:0.1em;font-family:'Syne',sans-serif;flex-shrink:0;">
+                            {{ $collab->role }}
+                        </span>
+                        <a href="{{ route('documents.edit', $collab->document->uuid) }}" style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.72rem;font-weight:700;color:#0284c7;text-decoration:none;font-family:'Syne',sans-serif;flex-shrink:0;" onmouseover="this.style.color='#7dd3fc'" onmouseout="this.style.color='#0284c7'">
+                            Open <span class="material-symbols-rounded" style="font-size:14px;">arrow_forward</span>
+                        </a>
+                    </div>
+                    @endif
+                @endforeach
+            </div>
+        </section>
+        @endif
+
     </div>
 </x-app-layout>
