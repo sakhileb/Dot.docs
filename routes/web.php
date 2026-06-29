@@ -65,7 +65,15 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $userId = auth()->id();
+        $myDocs      = \App\Models\Document::where('owner_id', $userId)->count();
+        $sharedDocs  = \App\Models\DocumentCollaborator::where('user_id', $userId)->count();
+        $publicDocs  = \App\Models\Document::where('owner_id', $userId)->where('is_public', true)->count();
+        $aiSuggestions = \App\Models\AiSuggestion::where('user_id', $userId)->whereNull('accepted_at')->count();
+        $recentDocs  = \App\Models\Document::where('owner_id', $userId)->latest()->limit(8)->get();
+        $recentShared = \App\Models\DocumentCollaborator::where('user_id', $userId)
+            ->with('document.owner')->latest()->limit(5)->get();
+        return view('dashboard', compact('myDocs', 'sharedDocs', 'publicDocs', 'aiSuggestions', 'recentDocs', 'recentShared'));
     })->name('dashboard');
 
     // Documents
