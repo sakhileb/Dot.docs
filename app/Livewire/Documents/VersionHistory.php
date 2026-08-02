@@ -62,8 +62,8 @@ class VersionHistory extends Component
         }
 
         [$a, $b] = $this->compareIds;
-        $vA = DocumentVersion::find($a);
-        $vB = DocumentVersion::find($b);
+        $vA = DocumentVersion::where('document_id', $this->document->id)->find($a);
+        $vB = DocumentVersion::where('document_id', $this->document->id)->find($b);
 
         if (! $vA || ! $vB) {
             return;
@@ -113,7 +113,7 @@ class VersionHistory extends Component
             ->paginate(10);
 
         $previewVersion = $this->previewId
-            ? DocumentVersion::find($this->previewId)
+            ? DocumentVersion::where('document_id', $this->document->id)->find($this->previewId)
             : null;
 
         return view('livewire.documents.version-history', [

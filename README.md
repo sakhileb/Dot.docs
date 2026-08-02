@@ -8,7 +8,7 @@
 
 <br />
 
-![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?style=flat-square) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?style=flat-square) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)
 
 <br /><br />
 
@@ -35,25 +35,29 @@ Dot.docs is the team document platform in the InfoDot ecosystem. Rich-text editi
 
 ## Domain Models
 
-- **Document** — rich-text content with metadata
-- **DocumentVersion** — snapshot history
-- **DocumentComment** — inline annotation thread
-- **DocumentTemplate** — reusable layouts
+- **Document** — rich-text content with metadata (owner, team, public share settings)
+- **DocumentVersion** — snapshot history, auto-created on every save via `DocumentObserver`
+- **DocumentCollaborator** — per-user role on a shared document (viewer/editor/admin)
+- **Comment** — threaded, resolvable inline annotation (with `parent_id` for replies)
+- **AiSuggestion** — a suggested edit awaiting accept/reject (suggestion-mode track changes)
+- **DocumentTemplate** — reusable starting layout (global, team-owned, or personal)
+- **DocumentSlashCommand** — user- or team-defined `/command` prompt shortcut for the AI assistant
+- **DocumentWebhook** — outbound webhook fired on document save/export events
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | Laravel 12 |
+| Framework | Laravel 13 |
 | Language | PHP 8.4 |
 | Frontend | Livewire 3 · Alpine.js 3 · Tailwind CSS |
-| Database | PostgreSQL 16 (shared across ecosystem) |
-| Realtime | Laravel Reverb |
-| Auth | Laravel Sanctum (InfoDot SSO) |
-| AI | Anthropic Claude (`claude-sonnet-4-6`) |
-| Storage | AWS S3 / Local (Flysystem) |
-| Search | Laravel Scout · Meilisearch |
-| Queue | Redis · Laravel Horizon |
+| Database | PostgreSQL (shared across ecosystem — `DB_DATABASE=infodot`) |
+| Realtime | Laravel Reverb (presence channels, broadcast events) |
+| Auth | Laravel Sanctum (InfoDot SSO) + Jetstream Teams |
+| AI | OpenAI (`openai-php/laravel`, default model `gpt-4o`) — not Anthropic |
+| Storage | Local disk (Flysystem); no S3 config wired in yet |
+| Cache / Session / Queue | Database driver (no Redis, Horizon, Scout, or Meilisearch dependency in `composer.json`) |
+| Export / Import | `barryvdh/laravel-dompdf` (PDF), `phpoffice/phpword` (Word), `league/html-to-markdown` (Markdown), `jfcherng/php-diff` (version diffs) |
 
 ## Quick Start
 

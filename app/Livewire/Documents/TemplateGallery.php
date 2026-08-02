@@ -54,8 +54,22 @@ class TemplateGallery extends Component
 
     public function useTemplate(int $templateId): void
     {
-        $template = DocumentTemplate::findOrFail($templateId);
         $user = auth()->user();
+
+        // Scope to the same visibility rule as the templates() list: global,
+        // the user's own team, or authored by the user. Prevents an
+        // authenticated user from pulling another team's private template
+        // content by guessing/incrementing the templateId argument.
+        $template = DocumentTemplate::where('id', $templateId)
+            ->where(function ($q) use ($user) {
+                $q->where('is_global', true)
+                  ->orWhere('created_by', $user->id);
+
+                if ($user->currentTeam) {
+                    $q->orWhere('team_id', $user->currentTeam->id);
+                }
+            })
+            ->firstOrFail();
 
         $document = Document::create([
             'uuid'     => (string) Str::uuid(),
