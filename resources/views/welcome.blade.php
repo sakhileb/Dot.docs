@@ -213,6 +213,10 @@
 <!-- ======================================================== -->
 <section class="hero-bg relative overflow-hidden flex flex-col justify-center pt-6 pb-24" style="min-height: calc(100vh - 4rem);">
 
+    <!-- Photographic Background: real team-collaborating-in-office photo by Vitaly Gariev (@silverkblack), unsplash.com/photos/l6I8PWGnAVQ -->
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1713946598491-4f85decbeaaf?q=80&w=2400&auto=format&fit=crop');"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(8,15,30,0.88) 0%, rgba(8,15,30,0.93) 55%, #080f1e 100%);"></div>
+
     <!-- Dot grid overlay -->
     <div class="dot-grid absolute inset-0 pointer-events-none" aria-hidden="true"></div>
 

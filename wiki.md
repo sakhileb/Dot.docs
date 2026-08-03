@@ -1,6 +1,6 @@
 ---
 title: Dot.docs — Platform Wiki
-version: 0.1.0
+version: 0.2.0
 status: draft
 owners: [Docs Platform Lead]
 platform-id: dot-docs
@@ -134,6 +134,7 @@ This pass was hand-authored and hand-reviewed only. **No PHP, Composer, PostgreS
 
 | Version | Date | Author | Change |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | Sakhile Bhayi | Redesigned `resources/views/welcome.blade.php`'s hero background: the nav/footer `dot_doc.png` logo was already real from a prior pass, but the hero section (`.hero-bg`) used only abstract radial-gradient glows with no photographic content. Added a real, licensed Unsplash photo of a team collaborating in an office by Vitaly Gariev (@silverkblack), unsplash.com/photos/l6I8PWGnAVQ, hotlinked via Unsplash's CDN with photographer credit as an inline HTML comment, layered under a dark linear-gradient overlay so the existing gold/sky gradient text and dot-grid overlay keep WCAG-adequate contrast. Verified the CDN URL resolves (`curl -sI` returned `HTTP/2 200`) before committing. |
 | 0.1.0 | 2026-08-02 | Docs Platform Lead | Initial platform-owned wiki, derived from the actual Laravel codebase. Verified the `EcosystemAuthController` SSO contract (correct) and fixed a real `DB_DATABASE` misconfiguration in `.env.example` (was falling back to a nonexistent `laravel` database instead of the shared `infodot` instance). Fixed two IDOR gaps found in this pass's security scan: unscoped `DocumentVersion::find()` in `VersionHistory` and unscoped `DocumentTemplate::findOrFail()` in `TemplateGallery`. Wired the existing `dot_doc.png` logo into the app-shell favicon (was only wired into `welcome`/`guest` layouts) and generated the standard ecosystem favicon set. Corrected README.md's stack claims (Laravel 12→13, "Anthropic Claude"→OpenAI/gpt-4o, removed unimplemented Redis/Horizon/Scout/Meilisearch claims, corrected the domain-model list). |
 
 ## Open Questions
