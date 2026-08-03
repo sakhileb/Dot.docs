@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/logo.svg" alt="Dot.docs" width="320" />
+<img src="public/dot_doc.png" alt="Dot.docs" width="220" />
 
 <br /><br />
 
