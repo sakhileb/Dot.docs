@@ -55,28 +55,3 @@ class Comment extends Model
         return $matches[1] ?? [];
     }
 }
-
-    protected $casts = [
-        'resolved_at' => 'datetime',
-    ];
-
-    public function document(): BelongsTo
-    {
-        return $this->belongsTo(Document::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    public function replies(): HasMany
-    {
-        return $this->hasMany(self::class, 'parent_id');
-    }
-}
