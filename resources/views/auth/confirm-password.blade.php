@@ -5,11 +5,11 @@
         </x-slot>
 
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-extrabold text-slate-900">Confirm password</h1>
-            <p class="text-sm text-slate-500 mt-1">This area requires your password to continue</p>
+            <h1 class="text-2xl font-display font-semibold text-[var(--ink)]">Confirm password</h1>
+            <p class="text-sm text-[var(--ink-soft)] mt-1">This area requires your password to continue</p>
         </div>
 
-        <div class="mb-4 text-sm text-slate-500">
+        <div class="mb-4 text-sm text-[var(--ink-soft)]">
             {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
         </div>
 

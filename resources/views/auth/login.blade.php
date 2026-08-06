@@ -5,14 +5,14 @@
         </x-slot>
 
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-extrabold text-slate-900">Welcome back</h1>
-            <p class="text-sm text-slate-500 mt-1">Sign in to your dot.doc account</p>
+            <h1 class="text-2xl font-display font-semibold text-[var(--ink)]">Welcome back</h1>
+            <p class="text-sm text-[var(--ink-soft)] mt-1">Sign in to your dot.doc account</p>
         </div>
 
         <x-validation-errors class="mb-4" />
 
         @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600">
+            <div class="mb-4 font-medium text-sm text-emerald-600">
                 {{ $value }}
             </div>
         @endsession
@@ -33,13 +33,13 @@
             <div class="block mt-4">
                 <label for="remember_me" class="flex items-center">
                     <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                    <span class="ms-2 text-sm text-[var(--ink-soft)]">{{ __('Remember me') }}</span>
                 </label>
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 @if (Route::has('password.request'))
-                    <a class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors" href="{{ route('password.request') }}">
+                    <a class="text-sm font-medium text-[var(--blue-deep)] hover:text-[var(--blue)] transition-colors" href="{{ route('password.request') }}">
                         {{ __('Forgot your password?') }}
                     </a>
                 @endif

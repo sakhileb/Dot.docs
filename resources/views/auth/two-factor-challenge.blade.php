@@ -5,16 +5,16 @@
         </x-slot>
 
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-extrabold text-slate-900">Two-factor authentication</h1>
-            <p class="text-sm text-slate-500 mt-1">Confirm access to your account</p>
+            <h1 class="text-2xl font-display font-semibold text-[var(--ink)]">Two-factor authentication</h1>
+            <p class="text-sm text-[var(--ink-soft)] mt-1">Confirm access to your account</p>
         </div>
 
         <div x-data="{ recovery: false }">
-            <div class="mb-4 text-sm text-slate-500" x-show="! recovery">
+            <div class="mb-4 text-sm text-[var(--ink-soft)]" x-show="! recovery">
                 {{ __('Please confirm access to your account by entering the authentication code provided by your authenticator application.') }}
             </div>
 
-            <div class="mb-4 text-sm text-slate-500" x-cloak x-show="recovery">
+            <div class="mb-4 text-sm text-[var(--ink-soft)]" x-cloak x-show="recovery">
                 {{ __('Please confirm access to your account by entering one of your emergency recovery codes.') }}
             </div>
 
@@ -35,7 +35,7 @@
 
                 <div class="flex items-center justify-end mt-4">
                     <button type="button"
-                            class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
+                            class="text-sm font-medium text-[var(--blue-deep)] hover:text-[var(--blue)] transition-colors"
                             x-show="! recovery"
                             x-on:click="
                                 recovery = true;
@@ -45,7 +45,7 @@
                     </button>
 
                     <button type="button"
-                            class="text-sm font-medium text-sky-600 hover:text-sky-700 transition-colors"
+                            class="text-sm font-medium text-[var(--blue-deep)] hover:text-[var(--blue)] transition-colors"
                             x-cloak
                             x-show="recovery"
                             x-on:click="

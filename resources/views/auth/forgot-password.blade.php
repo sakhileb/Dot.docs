@@ -5,16 +5,16 @@
         </x-slot>
 
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-extrabold text-slate-900">Forgot password?</h1>
-            <p class="text-sm text-slate-500 mt-1">We'll send a reset link to your inbox</p>
+            <h1 class="text-2xl font-display font-semibold text-[var(--ink)]">Forgot password?</h1>
+            <p class="text-sm text-[var(--ink-soft)] mt-1">We'll send a reset link to your inbox</p>
         </div>
 
-        <div class="mb-4 text-sm text-slate-500">
+        <div class="mb-4 text-sm text-[var(--ink-soft)]">
             {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
         </div>
 
         @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600">
+            <div class="mb-4 font-medium text-sm text-emerald-600">
                 {{ $value }}
             </div>
         @endsession
