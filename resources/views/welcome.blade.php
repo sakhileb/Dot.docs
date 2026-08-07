@@ -97,7 +97,11 @@
         <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 border-b border-transparent">
             <nav class="max-w-[1400px] mx-auto px-5 sm:px-8 py-3 flex items-center justify-between">
                 <a href="/" class="flex items-center gap-2.5 press">
-                    <img src="{{ asset('images/logo.png') }}" alt="Dot.docs" class="h-14 sm:h-16 w-auto">
+                    {{-- Header overlays a hero photo with a fully-opaque
+                         --ink scrim at this exact position (unlike the
+                         footer below, which sits on the page's light paper
+                         and keeps the default logo). --}}
+                    <img src="{{ asset('images/logo-light.png') }}" alt="Dot.docs" class="h-14 sm:h-16 w-auto">
                 </a>
 
                 <div class="hidden md:flex items-center gap-8 font-mono text-[13px] tracking-wide uppercase text-[var(--cream)]">
