@@ -15,8 +15,8 @@ class HtmlSanitizer
 
         // Allow TipTap's full output: headings, lists, tables, code, blockquotes, links, images
         $config->set('HTML.Allowed',
-            'p,br,strong,em,u,s,code,pre,blockquote,h1,h2,h3,h4,h5,h6,' .
-            'ul,ol,li,table,thead,tbody,tr,th,td,a[href|title|target],img[src|alt|width|height],' .
+            'p,br,strong,em,u,s,code,pre,blockquote,h1,h2,h3,h4,h5,h6,'.
+            'ul,ol,li,table,thead,tbody,tr,th,td,a[href|title|target],img[src|alt|width|height],'.
             'span[class],div[class]'
         );
 
@@ -46,6 +46,7 @@ class HtmlSanitizer
     public function toPlainText(string $html, int $maxLength = 12000): string
     {
         $text = strip_tags(htmlspecialchars_decode($this->clean($html)));
+
         return mb_substr($text, 0, $maxLength);
     }
 }

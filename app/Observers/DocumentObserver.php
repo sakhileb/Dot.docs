@@ -28,11 +28,11 @@ class DocumentObserver
 
         if ($document->wasChanged('content') && $document->content !== null) {
             DocumentVersion::create([
-                'document_id'      => $document->id,
+                'document_id' => $document->id,
                 'content_snapshot' => $document->content,
-                'version_number'   => $document->version,
-                'created_by'       => auth()->id() ?? $document->owner_id,
-                'created_at'       => now(),
+                'version_number' => $document->version,
+                'created_by' => auth()->id() ?? $document->owner_id,
+                'created_at' => now(),
             ]);
 
             // Fire on_save webhooks asynchronously (best-effort)

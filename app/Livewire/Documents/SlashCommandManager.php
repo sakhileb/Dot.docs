@@ -8,11 +8,15 @@ use Livewire\Component;
 class SlashCommandManager extends Component
 {
     // Form fields
-    public string $name            = '';
-    public string $description     = '';
-    public string $promptTemplate  = '';
-    public bool   $shareWithTeam   = false;
-    public bool   $showForm        = false;
+    public string $name = '';
+
+    public string $description = '';
+
+    public string $promptTemplate = '';
+
+    public bool $shareWithTeam = false;
+
+    public bool $showForm = false;
 
     public ?int $editingId = null;
 
@@ -25,31 +29,33 @@ class SlashCommandManager extends Component
     public function editCommand(int $id): void
     {
         $cmd = $this->ownedCommand($id);
-        if (! $cmd) return;
+        if (! $cmd) {
+            return;
+        }
 
-        $this->editingId      = $id;
-        $this->name           = $cmd->name;
-        $this->description    = $cmd->description ?? '';
+        $this->editingId = $id;
+        $this->name = $cmd->name;
+        $this->description = $cmd->description ?? '';
         $this->promptTemplate = $cmd->prompt_template;
-        $this->shareWithTeam  = $cmd->share_with_team;
-        $this->showForm       = true;
+        $this->shareWithTeam = $cmd->share_with_team;
+        $this->showForm = true;
     }
 
     public function save(): void
     {
         $this->validate([
-            'name'           => 'required|alpha_dash|max:64',
-            'description'    => 'nullable|string|max:255',
+            'name' => 'required|alpha_dash|max:64',
+            'description' => 'nullable|string|max:255',
             'promptTemplate' => 'required|string|max:2000',
         ]);
 
         $user = auth()->user();
 
         $data = [
-            'user_id'         => $user->id,
-            'team_id'         => $this->shareWithTeam ? $user->currentTeam?->id : null,
-            'name'            => strtolower(ltrim($this->name, '/')),
-            'description'     => $this->description ?: null,
+            'user_id' => $user->id,
+            'team_id' => $this->shareWithTeam ? $user->currentTeam?->id : null,
+            'name' => strtolower(ltrim($this->name, '/')),
+            'description' => $this->description ?: null,
             'prompt_template' => $this->promptTemplate,
             'share_with_team' => $this->shareWithTeam,
         ];
@@ -78,22 +84,22 @@ class SlashCommandManager extends Component
 
     private function resetForm(): void
     {
-        $this->editingId      = null;
-        $this->name           = '';
-        $this->description    = '';
+        $this->editingId = null;
+        $this->name = '';
+        $this->description = '';
         $this->promptTemplate = '';
-        $this->shareWithTeam  = false;
-        $this->showForm       = false;
+        $this->shareWithTeam = false;
+        $this->showForm = false;
     }
 
     public function render()
     {
-        $user     = auth()->user();
+        $user = auth()->user();
         $commands = DocumentSlashCommand::where('user_id', $user->id)
             ->orWhere(function ($q) use ($user) {
                 if ($user->currentTeam) {
                     $q->where('team_id', $user->currentTeam->id)
-                      ->where('share_with_team', true);
+                        ->where('share_with_team', true);
                 }
             })
             ->orderBy('name')

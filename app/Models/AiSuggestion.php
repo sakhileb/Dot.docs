@@ -19,7 +19,7 @@ class AiSuggestion extends Model
 
     protected $casts = [
         'accepted_at' => 'datetime',
-        'created_at'  => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function document(): BelongsTo

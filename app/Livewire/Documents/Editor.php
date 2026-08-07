@@ -11,6 +11,8 @@ use App\Services\HtmlSanitizer;
 use App\Services\PresenceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -20,9 +22,13 @@ class Editor extends Component
     use AuthorizesRequests;
 
     public Document $document;
+
     public string $title = '';
+
     public string $content = '';
+
     public bool $saved = false;
+
     public array $activeUsers = [];
 
     /** Suggestion / track-changes mode */
@@ -39,7 +45,7 @@ class Editor extends Component
         $this->document = Document::where('uuid', $uuid)->firstOrFail();
         $this->authorize('view', $this->document);
 
-        $this->title   = $this->document->title;
+        $this->title = $this->document->title;
         $this->content = $this->document->content ?? '';
 
         $presence = app(PresenceService::class);
@@ -64,13 +70,14 @@ class Editor extends Component
         if ($this->suggestionMode) {
             // Store as a suggestion instead of saving directly
             AiSuggestion::create([
-                'document_id'     => $this->document->id,
-                'user_id'         => Auth::id(),
+                'document_id' => $this->document->id,
+                'user_id' => Auth::id(),
                 'suggestion_text' => $content,
-                'created_at'      => now(),
+                'created_at' => now(),
             ]);
             $this->loadPendingSuggestions();
             $this->saved = true;
+
             return;
         }
 
@@ -164,16 +171,16 @@ class Editor extends Component
             ->with('user:id,name')
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn($s) => [
-                'id'         => $s->id,
-                'user'       => $s->user->name,
+            ->map(fn ($s) => [
+                'id' => $s->id,
+                'user' => $s->user->name,
                 'created_at' => $s->created_at->diffForHumans(),
-                'excerpt'    => \Illuminate\Support\Str::limit(strip_tags($s->suggestion_text), 80),
+                'excerpt' => Str::limit(strip_tags($s->suggestion_text), 80),
             ])
             ->toArray();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.documents.editor');
     }

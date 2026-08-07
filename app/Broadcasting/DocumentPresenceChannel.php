@@ -39,8 +39,8 @@ class DocumentPresenceChannel
     private function memberData(User $user): array
     {
         return [
-            'id'     => $user->id,
-            'name'   => $user->name,
+            'id' => $user->id,
+            'name' => $user->name,
             'avatar' => $user->profile_photo_url,
         ];
     }

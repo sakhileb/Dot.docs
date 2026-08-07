@@ -21,7 +21,7 @@ class CommentPosted implements ShouldBroadcast
 
     public function broadcastOn(): array
     {
-        return [new PresenceChannel('document.' . $this->document->id)];
+        return [new PresenceChannel('document.'.$this->document->id)];
     }
 
     public function broadcastAs(): string
@@ -33,15 +33,15 @@ class CommentPosted implements ShouldBroadcast
     {
         return [
             'comment' => [
-                'id'             => $this->comment->id,
-                'content'        => $this->comment->content,
-                'parent_id'      => $this->comment->parent_id,
+                'id' => $this->comment->id,
+                'content' => $this->comment->content,
+                'parent_id' => $this->comment->parent_id,
                 'selection_text' => $this->comment->selection_text,
-                'resolved_at'    => $this->comment->resolved_at,
-                'created_at'     => $this->comment->created_at->toISOString(),
-                'user'           => [
-                    'id'     => $this->comment->user->id,
-                    'name'   => $this->comment->user->name,
+                'resolved_at' => $this->comment->resolved_at,
+                'created_at' => $this->comment->created_at->toISOString(),
+                'user' => [
+                    'id' => $this->comment->user->id,
+                    'name' => $this->comment->user->name,
                     'avatar' => $this->comment->user->profile_photo_url,
                 ],
             ],

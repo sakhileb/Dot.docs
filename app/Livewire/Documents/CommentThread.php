@@ -21,11 +21,14 @@ class CommentThread extends Component
     public Document $document;
 
     public string $newComment = '';
+
     public ?int $replyingTo = null;
+
     public string $replyContent = '';
 
     /** User search for @mentions */
     public string $mentionQuery = '';
+
     public array $mentionResults = [];
 
     /** Filter: all | open | resolved */
@@ -45,8 +48,8 @@ class CommentThread extends Component
 
         $comment = Comment::create([
             'document_id' => $this->document->id,
-            'user_id'     => Auth::id(),
-            'content'     => $sanitizer->clean($this->newComment),
+            'user_id' => Auth::id(),
+            'content' => $sanitizer->clean($this->newComment),
         ]);
 
         $comment->load('user');
@@ -58,7 +61,7 @@ class CommentThread extends Component
             // Broadcasting unavailable
         }
 
-        $this->newComment     = '';
+        $this->newComment = '';
         $this->mentionResults = [];
     }
 
@@ -74,9 +77,9 @@ class CommentThread extends Component
 
         $comment = Comment::create([
             'document_id' => $this->document->id,
-            'user_id'     => Auth::id(),
-            'content'     => $sanitizer->clean($this->replyContent),
-            'parent_id'   => $parent->id,
+            'user_id' => Auth::id(),
+            'content' => $sanitizer->clean($this->replyContent),
+            'parent_id' => $parent->id,
         ]);
 
         $comment->load('user');
@@ -88,8 +91,8 @@ class CommentThread extends Component
             // Broadcasting unavailable
         }
 
-        $this->replyContent   = '';
-        $this->replyingTo     = null;
+        $this->replyContent = '';
+        $this->replyingTo = null;
         $this->mentionResults = [];
     }
 
@@ -122,13 +125,13 @@ class CommentThread extends Component
 
     public function startReply(int $commentId): void
     {
-        $this->replyingTo   = $commentId;
+        $this->replyingTo = $commentId;
         $this->replyContent = '';
     }
 
     public function cancelReply(): void
     {
-        $this->replyingTo   = null;
+        $this->replyingTo = null;
         $this->replyContent = '';
     }
 
@@ -138,6 +141,7 @@ class CommentThread extends Component
 
         if (strlen($query) < 1) {
             $this->mentionResults = [];
+
             return;
         }
 
@@ -170,7 +174,7 @@ class CommentThread extends Component
             User::whereIn('name', $mentions)
                 ->where('id', '!=', Auth::id())
                 ->get()
-                ->each(fn($user) => $user->notify(
+                ->each(fn ($user) => $user->notify(
                     new MentionedInCommentNotification($this->document, $comment)
                 ));
         }
@@ -199,9 +203,8 @@ class CommentThread extends Component
             ->whereNull('parent_id')->whereNull('resolved_at')->count();
 
         return view('livewire.documents.comment-thread', [
-            'comments'  => $comments,
+            'comments' => $comments,
             'totalOpen' => $totalOpen,
         ]);
     }
 }
-

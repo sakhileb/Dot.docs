@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class CommentPostedNotification extends Notification implements ShouldQueue
 {
@@ -27,23 +28,23 @@ class CommentPostedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New comment on "' . $this->document->title . '"')
-            ->line($this->comment->user->name . ' commented on your document.')
-            ->line('"' . \Illuminate\Support\Str::limit($this->comment->content, 120) . '"')
+            ->subject('New comment on "'.$this->document->title.'"')
+            ->line($this->comment->user->name.' commented on your document.')
+            ->line('"'.Str::limit($this->comment->content, 120).'"')
             ->action('View Document', route('documents.edit', $this->document->uuid));
     }
 
     public function toArray(object $notifiable): array
     {
         return [
-            'type'          => 'comment',
-            'document_id'   => $this->document->id,
+            'type' => 'comment',
+            'document_id' => $this->document->id,
             'document_uuid' => $this->document->uuid,
-            'document_title'=> $this->document->title,
-            'comment_id'    => $this->comment->id,
-            'commenter'     => $this->comment->user->name,
-            'excerpt'       => \Illuminate\Support\Str::limit($this->comment->content, 80),
-            'url'           => route('documents.edit', $this->document->uuid),
+            'document_title' => $this->document->title,
+            'comment_id' => $this->comment->id,
+            'commenter' => $this->comment->user->name,
+            'excerpt' => Str::limit($this->comment->content, 80),
+            'url' => route('documents.edit', $this->document->uuid),
         ];
     }
 

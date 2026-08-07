@@ -12,17 +12,21 @@ class DocumentSettings extends Component
     use AuthorizesRequests;
 
     public Document $document;
+
     public string $title = '';
+
     public bool $isPublic = false;
+
     public bool $showDeleteConfirm = false;
+
     public string $transferEmail = '';
 
     public function mount(string $uuid): void
     {
-        $this->document  = Document::where('uuid', $uuid)->firstOrFail();
+        $this->document = Document::where('uuid', $uuid)->firstOrFail();
         $this->authorize('update', $this->document);
 
-        $this->title    = $this->document->title;
+        $this->title = $this->document->title;
         $this->isPublic = $this->document->is_public;
     }
 
@@ -32,7 +36,7 @@ class DocumentSettings extends Component
         $this->validate(['title' => 'required|string|max:255']);
 
         $this->document->update([
-            'title'     => $this->title,
+            'title' => $this->title,
             'is_public' => $this->isPublic,
         ]);
 

@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 
 class Document extends Model
 {
@@ -25,7 +26,7 @@ class Document extends Model
     ];
 
     protected $casts = [
-        'is_public'        => 'boolean',
+        'is_public' => 'boolean',
         'share_expires_at' => 'datetime',
     ];
 
@@ -100,10 +101,9 @@ class Document extends Model
         }
 
         if ($this->share_password) {
-            return $password && \Illuminate\Support\Facades\Hash::check($password, $this->share_password);
+            return $password && Hash::check($password, $this->share_password);
         }
 
         return true;
     }
 }
-

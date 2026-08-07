@@ -2,13 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class NotificationBell extends Component
 {
     public int $unreadCount = 0;
+
     public array $notifications = [];
+
     public bool $open = false;
 
     public function mount(): void
@@ -25,13 +27,13 @@ class NotificationBell extends Component
             ->latest()
             ->limit(10)
             ->get()
-            ->map(fn($n) => [
-                'id'        => $n->id,
-                'type'      => $n->data['type'] ?? 'notification',
-                'message'   => $this->formatMessage($n->data),
-                'url'       => $n->data['url'] ?? null,
-                'read'      => !is_null($n->read_at),
-                'time'      => $n->created_at->diffForHumans(),
+            ->map(fn ($n) => [
+                'id' => $n->id,
+                'type' => $n->data['type'] ?? 'notification',
+                'message' => $this->formatMessage($n->data),
+                'url' => $n->data['url'] ?? null,
+                'read' => ! is_null($n->read_at),
+                'time' => $n->created_at->diffForHumans(),
             ])
             ->toArray();
     }
@@ -50,7 +52,7 @@ class NotificationBell extends Component
 
     public function toggle(): void
     {
-        $this->open = !$this->open;
+        $this->open = ! $this->open;
         if ($this->open) {
             $this->loadNotifications();
         }
@@ -58,10 +60,10 @@ class NotificationBell extends Component
 
     private function formatMessage(array $data): string
     {
-        return match($data['type'] ?? '') {
-            'comment'   => ($data['commenter'] ?? 'Someone') . ' commented on "' . ($data['document_title'] ?? 'a document') . '"',
-            'mention'   => ($data['mentioner'] ?? 'Someone') . ' mentioned you in "' . ($data['document_title'] ?? 'a document') . '"',
-            default     => 'You have a new notification',
+        return match ($data['type'] ?? '') {
+            'comment' => ($data['commenter'] ?? 'Someone').' commented on "'.($data['document_title'] ?? 'a document').'"',
+            'mention' => ($data['mentioner'] ?? 'Someone').' mentioned you in "'.($data['document_title'] ?? 'a document').'"',
+            default => 'You have a new notification',
         };
     }
 
@@ -70,4 +72,3 @@ class NotificationBell extends Component
         return view('livewire.notification-bell');
     }
 }
-

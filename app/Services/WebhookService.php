@@ -12,9 +12,8 @@ class WebhookService
     /**
      * Fire all active webhooks for a document and event type.
      *
-     * @param  Document  $document
-     * @param  string    $event     'on_save' | 'on_export'
-     * @param  array     $payload   Extra data merged into the body
+     * @param  string  $event  'on_save' | 'on_export'
+     * @param  array  $payload  Extra data merged into the body
      */
     public function fire(Document $document, string $event, array $payload = []): void
     {
@@ -28,12 +27,12 @@ class WebhookService
             }
 
             $body = array_merge([
-                'event'        => $event,
-                'document_id'  => $document->id,
-                'document_uuid'=> $document->uuid,
-                'title'        => $document->title,
-                'version'      => $document->version,
-                'timestamp'    => now()->toIso8601String(),
+                'event' => $event,
+                'document_id' => $document->id,
+                'document_uuid' => $document->uuid,
+                'title' => $document->title,
+                'version' => $document->version,
+                'timestamp' => now()->toIso8601String(),
             ], $payload);
 
             $headers = ['Content-Type' => 'application/json'];
@@ -48,7 +47,7 @@ class WebhookService
                     ->timeout(5)
                     ->post($webhook->url, $body);
             } catch (\Throwable $e) {
-                Log::warning("Webhook delivery failed [{$webhook->id}]: " . $e->getMessage());
+                Log::warning("Webhook delivery failed [{$webhook->id}]: ".$e->getMessage());
             }
         }
     }

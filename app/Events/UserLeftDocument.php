@@ -22,7 +22,7 @@ class UserLeftDocument implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('document.' . $this->document->id),
+            new PresenceChannel('document.'.$this->document->id),
         ];
     }
 

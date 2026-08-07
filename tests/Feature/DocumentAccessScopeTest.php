@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentTemplate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -39,7 +40,7 @@ class DocumentAccessScopeTest extends TestCase
         $outsider = User::factory()->withPersonalTeam()->create();
 
         $document = Document::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'title' => "Owner's Personal Doc",
             'content' => 'private content',
             'owner_id' => $owner->id,
@@ -62,7 +63,7 @@ class DocumentAccessScopeTest extends TestCase
         $owner = User::factory()->withPersonalTeam()->create();
 
         $document = Document::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'title' => "Owner's Personal Doc",
             'content' => 'private content',
             'owner_id' => $owner->id,
@@ -104,7 +105,7 @@ class DocumentAccessScopeTest extends TestCase
         $visibleToOutsider = DocumentTemplate::query()
             ->where(function ($q) use ($outsider) {
                 $q->where('is_global', true)
-                  ->orWhere('created_by', $outsider->id);
+                    ->orWhere('created_by', $outsider->id);
                 if ($outsider->currentTeam) {
                     $q->orWhere('team_id', $outsider->currentTeam->id);
                 }

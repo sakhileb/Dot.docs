@@ -16,7 +16,9 @@ class WebhookManager extends Component
 
     // New webhook form
     public string $newUrl = '';
+
     public array $newEvents = ['on_save', 'on_export'];
+
     public bool $generateSecret = true;
 
     public function mount(Document $document): void
@@ -34,11 +36,11 @@ class WebhookManager extends Component
 
         DocumentWebhook::create([
             'document_id' => $this->document->id,
-            'user_id'     => auth()->id(),
-            'url'         => $this->newUrl,
-            'events'      => $this->newEvents ?: ['on_save', 'on_export'],
-            'secret'      => $this->generateSecret ? Str::random(32) : null,
-            'active'      => true,
+            'user_id' => auth()->id(),
+            'url' => $this->newUrl,
+            'events' => $this->newEvents ?: ['on_save', 'on_export'],
+            'secret' => $this->generateSecret ? Str::random(32) : null,
+            'active' => true,
         ]);
 
         $this->newUrl = '';

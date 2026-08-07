@@ -26,15 +26,15 @@ class DailyDigestNotification extends Notification implements ShouldQueue
         $plural = $this->unreadCount !== 1 ? 's' : '';
         $mail = (new MailMessage)
             ->subject('Your Dot.docs daily digest')
-            ->greeting('Hello ' . $notifiable->name . '!')
-            ->line('You have **' . $this->unreadCount . ' unread notification' . $plural . '** since yesterday.');
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line('You have **'.$this->unreadCount.' unread notification'.$plural.'** since yesterday.');
 
         foreach (array_slice($this->items, 0, 5) as $item) {
-            $mail->line('- ' . $item['message']);
+            $mail->line('- '.$item['message']);
         }
 
         if (count($this->items) > 5) {
-            $mail->line('...and ' . (count($this->items) - 5) . ' more.');
+            $mail->line('...and '.(count($this->items) - 5).' more.');
         }
 
         return $mail
@@ -45,7 +45,7 @@ class DailyDigestNotification extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'type'         => 'daily_digest',
+            'type' => 'daily_digest',
             'unread_count' => $this->unreadCount,
         ];
     }

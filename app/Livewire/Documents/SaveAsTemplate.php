@@ -15,9 +15,13 @@ class SaveAsTemplate extends Component
     public Document $document;
 
     public bool $show = false;
+
     public string $name = '';
+
     public string $category = 'general';
+
     public string $description = '';
+
     public bool $shareWithTeam = false;
 
     public array $categories = ['general', 'resume', 'proposal', 'notes', 'blog'];
@@ -38,21 +42,21 @@ class SaveAsTemplate extends Component
         $this->authorize('update', $this->document);
 
         $this->validate([
-            'name'        => 'required|string|max:255',
-            'category'    => 'required|in:general,resume,proposal,notes,blog',
+            'name' => 'required|string|max:255',
+            'category' => 'required|in:general,resume,proposal,notes,blog',
             'description' => 'nullable|string|max:500',
         ]);
 
         $sanitizer = app(HtmlSanitizer::class);
 
         DocumentTemplate::create([
-            'name'        => $this->name,
-            'category'    => $this->category,
+            'name' => $this->name,
+            'category' => $this->category,
             'description' => $this->description,
-            'content'     => $sanitizer->clean($this->document->content ?? ''),
-            'is_global'   => false,
-            'team_id'     => $this->shareWithTeam ? auth()->user()->currentTeam?->id : null,
-            'created_by'  => auth()->id(),
+            'content' => $sanitizer->clean($this->document->content ?? ''),
+            'is_global' => false,
+            'team_id' => $this->shareWithTeam ? auth()->user()->currentTeam?->id : null,
+            'created_by' => auth()->id(),
         ]);
 
         $this->show = false;

@@ -20,13 +20,13 @@ class DocumentImageController extends Controller
             'image' => 'required|image|max:4096',
         ]);
 
-        $filename = Str::uuid() . '.webp';
-        $encoded  = Image::read($request->file('image'))->toWebp(quality: 82);
+        $filename = Str::uuid().'.webp';
+        $encoded = Image::read($request->file('image'))->toWebp(quality: 82);
 
-        Storage::disk('public')->put('document-images/' . $filename, $encoded->toString());
+        Storage::disk('public')->put('document-images/'.$filename, $encoded->toString());
 
         return response()->json([
-            'url' => asset('storage/document-images/' . $filename),
+            'url' => asset('storage/document-images/'.$filename),
         ]);
     }
 }

@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\Cache;
  */
 class PresenceService
 {
-    private const TTL    = 300;  // seconds before a user is considered gone
+    private const TTL = 300;  // seconds before a user is considered gone
+
     private const PREFIX = 'doc_presence:';
 
     private function key(int $documentId): string
     {
-        return self::PREFIX . $documentId;
+        return self::PREFIX.$documentId;
     }
 
     /**
@@ -28,11 +29,11 @@ class PresenceService
         $members = $this->getMembers($document->id);
 
         $members[$user->id] = [
-            'id'         => $user->id,
-            'name'       => $user->name,
-            'avatar'     => $user->profile_photo_url,
-            'joined_at'  => now()->toIso8601String(),
-            'last_seen'  => now()->toIso8601String(),
+            'id' => $user->id,
+            'name' => $user->name,
+            'avatar' => $user->profile_photo_url,
+            'joined_at' => now()->toIso8601String(),
+            'last_seen' => now()->toIso8601String(),
         ];
 
         Cache::put($this->key($document->id), $members, self::TTL);
@@ -76,7 +77,7 @@ class PresenceService
         $members = $this->getMembers($document->id);
 
         if (isset($members[$user->id])) {
-            $members[$user->id]['cursor']    = $cursor;
+            $members[$user->id]['cursor'] = $cursor;
             $members[$user->id]['last_seen'] = now()->toIso8601String();
             Cache::put($this->key($document->id), $members, self::TTL);
         }

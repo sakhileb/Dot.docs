@@ -38,6 +38,7 @@ class DocumentPolicy
                 if ($document->team_id && $user->belongsToTeam($document->team)) {
                     return true;
                 }
+
                 return $document->collaborators()->where('user_id', $user->id)->exists();
             }
         );
@@ -67,8 +68,10 @@ class DocumentPolicy
             function () use ($user, $document) {
                 if ($document->team_id && $user->belongsToTeam($document->team)) {
                     $role = $user->teamRole($document->team);
+
                     return $role && in_array($role->key, ['admin', 'editor']);
                 }
+
                 return $document->collaborators()
                     ->where('user_id', $user->id)
                     ->whereIn('role', ['editor', 'admin'])
@@ -89,6 +92,7 @@ class DocumentPolicy
 
         if ($document->team_id && $user->belongsToTeam($document->team)) {
             $role = $user->teamRole($document->team);
+
             return $role && $role->key === 'admin';
         }
 
@@ -122,6 +126,7 @@ class DocumentPolicy
 
         if ($document->team_id && $user->belongsToTeam($document->team)) {
             $role = $user->teamRole($document->team);
+
             return $role && $role->key === 'admin';
         }
 
@@ -139,6 +144,7 @@ class DocumentPolicy
 
         if ($document->team_id && $user->belongsToTeam($document->team)) {
             $role = $user->teamRole($document->team);
+
             return $role && in_array($role->key, ['admin', 'editor']);
         }
 
@@ -148,4 +154,3 @@ class DocumentPolicy
             ->exists();
     }
 }
-

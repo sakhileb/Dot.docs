@@ -3,16 +3,19 @@
 namespace App\Livewire\Documents;
 
 use App\Models\Document;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Index extends Component
 {
     public string $search = '';
+
     public string $filter = 'all'; // all | mine | shared | team
+
     public bool $showCreateModal = false;
+
     public string $newTitle = '';
+
     public int $perPage = 12;
 
     public function updatingSearch(): void
@@ -38,13 +41,13 @@ class Index extends Component
         return Document::query()
             ->where(function ($q) use ($user) {
                 $q->where('owner_id', $user->id)
-                  ->orWhereHas('collaborators', fn ($q) => $q->where('user_id', $user->id));
+                    ->orWhereHas('collaborators', fn ($q) => $q->where('user_id', $user->id));
 
                 if ($user->currentTeam) {
                     $q->orWhere('team_id', $user->currentTeam->id);
                 }
             })
-            ->when($this->search, fn ($q) => $q->where('title', 'like', '%' . $this->search . '%'))
+            ->when($this->search, fn ($q) => $q->where('title', 'like', '%'.$this->search.'%'))
             ->when($this->filter === 'mine', fn ($q) => $q->where('owner_id', $user->id))
             ->when($this->filter === 'shared', fn ($q) => $q->whereHas('collaborators', fn ($q) => $q->where('user_id', $user->id)))
             ->when($this->filter === 'team', fn ($q) => $user->currentTeam ? $q->where('team_id', $user->currentTeam->id) : $q)
@@ -57,10 +60,10 @@ class Index extends Component
         $this->validate(['newTitle' => 'required|string|max:255']);
 
         $document = Document::create([
-            'title'    => $this->newTitle,
+            'title' => $this->newTitle,
             'owner_id' => auth()->id(),
-            'team_id'  => auth()->user()->currentTeam?->id,
-            'version'  => 1,
+            'team_id' => auth()->user()->currentTeam?->id,
+            'version' => 1,
             'is_public' => false,
         ]);
 

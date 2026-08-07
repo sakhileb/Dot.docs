@@ -22,7 +22,7 @@ class UserJoinedDocument implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('document.' . $this->document->id),
+            new PresenceChannel('document.'.$this->document->id),
         ];
     }
 
@@ -35,8 +35,8 @@ class UserJoinedDocument implements ShouldBroadcast
     {
         return [
             'user' => [
-                'id'     => $this->user->id,
-                'name'   => $this->user->name,
+                'id' => $this->user->id,
+                'name' => $this->user->name,
                 'avatar' => $this->user->profile_photo_url,
             ],
         ];

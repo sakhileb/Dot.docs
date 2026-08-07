@@ -36,7 +36,7 @@ class VersionHistory extends Component
     public function preview(int $versionId): void
     {
         $this->previewId = $versionId;
-        $this->showDiff  = false;
+        $this->showDiff = false;
         $this->compareIds = [];
     }
 
@@ -81,7 +81,7 @@ class VersionHistory extends Component
             ['detailLevel' => 'word']
         );
 
-        $this->showDiff  = true;
+        $this->showDiff = true;
         $this->previewId = null;
     }
 
@@ -98,11 +98,11 @@ class VersionHistory extends Component
         ]);
 
         $this->dispatch('version-restored', content: $version->content_snapshot);
-        $this->previewId  = null;
-        $this->showDiff   = false;
+        $this->previewId = null;
+        $this->showDiff = false;
         $this->compareIds = [];
 
-        session()->flash('status', 'Document restored to version ' . $version->version_number . '.');
+        session()->flash('status', 'Document restored to version '.$version->version_number.'.');
     }
 
     public function render()
@@ -117,9 +117,8 @@ class VersionHistory extends Component
             : null;
 
         return view('livewire.documents.version-history', [
-            'versions'       => $versions,
+            'versions' => $versions,
             'previewVersion' => $previewVersion,
         ])->layout('layouts.app');
     }
 }
-

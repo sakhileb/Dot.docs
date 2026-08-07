@@ -14,18 +14,23 @@ class ShareManager extends Component
     use AuthorizesRequests;
 
     public Document $document;
+
     public string $inviteEmail = '';
-    public string $inviteRole  = 'viewer';
-    public string $publicLink  = '';
+
+    public string $inviteRole = 'viewer';
+
+    public string $publicLink = '';
 
     // Share link options
-    public string $sharePassword   = '';
-    public string $shareExpiresAt  = '';
-    public bool   $showPasswordSet = false;
+    public string $sharePassword = '';
+
+    public string $shareExpiresAt = '';
+
+    public bool $showPasswordSet = false;
 
     public function mount(string $uuid): void
     {
-        $this->document   = Document::with('collaborators.user')->where('uuid', $uuid)->firstOrFail();
+        $this->document = Document::with('collaborators.user')->where('uuid', $uuid)->firstOrFail();
         $this->authorize('update', $this->document);
         $this->publicLink = $this->document->is_public
             ? route('documents.shared', $this->document->uuid)
@@ -40,7 +45,7 @@ class ShareManager extends Component
         $this->authorize('share', $this->document);
         $this->validate([
             'inviteEmail' => 'required|email|exists:users,email',
-            'inviteRole'  => 'required|in:viewer,editor,admin',
+            'inviteRole' => 'required|in:viewer,editor,admin',
         ]);
 
         $user = User::where('email', $this->inviteEmail)->firstOrFail();
@@ -51,7 +56,7 @@ class ShareManager extends Component
         );
 
         $this->inviteEmail = '';
-        $this->inviteRole  = 'viewer';
+        $this->inviteRole = 'viewer';
         $this->document->load('collaborators.user');
     }
 
@@ -79,7 +84,7 @@ class ShareManager extends Component
     {
         $this->authorize('manage', $this->document);
         $this->validate([
-            'sharePassword'  => 'nullable|string|min:4|max:72',
+            'sharePassword' => 'nullable|string|min:4|max:72',
             'shareExpiresAt' => 'nullable|date|after:now',
         ]);
 
@@ -93,7 +98,7 @@ class ShareManager extends Component
 
         $this->document->update($updates);
         $this->document->refresh();
-        $this->sharePassword   = '';
+        $this->sharePassword = '';
         $this->showPasswordSet = (bool) $this->document->share_password;
         session()->flash('status', 'Share settings saved.');
     }

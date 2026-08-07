@@ -37,15 +37,15 @@ class AiAssistant extends Component
     public bool $showPalette = false;
 
     public array $commandSuggestions = [
-        '/summarize'       => 'Generate a TL;DR summary',
-        '/grammar'         => 'Fix grammar & spelling',
-        '/continue'        => 'Continue writing from here',
-        '/tone formal'     => 'Rewrite in formal tone',
-        '/tone casual'     => 'Rewrite in casual tone',
+        '/summarize' => 'Generate a TL;DR summary',
+        '/grammar' => 'Fix grammar & spelling',
+        '/continue' => 'Continue writing from here',
+        '/tone formal' => 'Rewrite in formal tone',
+        '/tone casual' => 'Rewrite in casual tone',
         '/tone persuasive' => 'Rewrite in persuasive tone',
-        '/tone concise'    => 'Rewrite in concise tone',
-        '/translate'       => 'Translate (e.g. /translate French)',
-        '/outline'         => 'Generate document outline',
+        '/tone concise' => 'Rewrite in concise tone',
+        '/translate' => 'Translate (e.g. /translate French)',
+        '/outline' => 'Generate document outline',
     ];
 
     public function mount(Document $document): void
@@ -58,7 +58,7 @@ class AiAssistant extends Component
     public function handleAction(string $action, string $param = ''): void
     {
         $this->action = $action;
-        $this->param  = $param;
+        $this->param = $param;
         $this->runAi();
     }
 
@@ -66,21 +66,21 @@ class AiAssistant extends Component
     public function openPalette(): void
     {
         $this->showPalette = true;
-        $this->command     = '';
-        $this->result      = '';
-        $this->showResult  = false;
+        $this->command = '';
+        $this->result = '';
+        $this->showResult = false;
 
         // Merge custom user/team commands into the suggestion list
-        $user    = Auth::user();
+        $user = Auth::user();
         $customs = DocumentSlashCommand::where(function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-                if ($user->currentTeam) {
-                    $q->orWhere(function ($q2) use ($user) {
-                        $q2->where('team_id', $user->currentTeam->id)
-                           ->where('share_with_team', true);
-                    });
-                }
-            })
+            $q->where('user_id', $user->id);
+            if ($user->currentTeam) {
+                $q->orWhere(function ($q2) use ($user) {
+                    $q2->where('team_id', $user->currentTeam->id)
+                        ->where('share_with_team', true);
+                });
+            }
+        })
             ->get()
             ->mapWithKeys(fn ($cmd) => ["/{$cmd->name}" => $cmd->description ?? 'Custom command']);
 
@@ -105,9 +105,10 @@ class AiAssistant extends Component
         $ai = app(AiService::class);
 
         if (! $ai->checkRateLimit(Auth::id())) {
-            $this->result     = 'Rate limit reached. You can make 20 AI requests per hour.';
+            $this->result = 'Rate limit reached. You can make 20 AI requests per hour.';
             $this->showResult = true;
             $this->showPalette = false;
+
             return;
         }
 
@@ -117,19 +118,19 @@ class AiAssistant extends Component
         try {
             $output = match ($this->action) {
                 'summarize' => $ai->summarize($html),
-                'grammar'   => $ai->grammarCheck($html),
-                'continue'  => $ai->continueWriting($html),
-                'tone'      => $ai->changeTone($html, $this->param ?: 'formal'),
+                'grammar' => $ai->grammarCheck($html),
+                'continue' => $ai->continueWriting($html),
+                'tone' => $ai->changeTone($html, $this->param ?: 'formal'),
                 'translate' => $ai->translate($html, $this->param ?: 'Spanish'),
-                'outline'   => $ai->generateOutline($html),
-                'command'   => $this->resolveCommand($ai, $html),
-                default     => $ai->freePrompt($this->action, $html),
+                'outline' => $ai->generateOutline($html),
+                'command' => $this->resolveCommand($ai, $html),
+                default => $ai->freePrompt($this->action, $html),
             };
 
             // Save to ai_suggestions
             $ai->saveSuggestion($this->document, Auth::id(), is_array($output) ? ($output['content'] ?? '') : $output);
 
-            $this->result     = is_array($output) ? ($output['content'] ?? '') : $output;
+            $this->result = is_array($output) ? ($output['content'] ?? '') : $output;
             $this->showResult = true;
             $this->showPalette = false;
 
@@ -138,7 +139,7 @@ class AiAssistant extends Component
                 $this->dispatch('ai-result', type: $output['type'], content: $output['content']);
             }
         } catch (\Throwable $e) {
-            $this->result     = 'AI request failed: ' . $e->getMessage();
+            $this->result = 'AI request failed: '.$e->getMessage();
             $this->showResult = true;
         } finally {
             $this->loading = false;
@@ -150,8 +151,8 @@ class AiAssistant extends Component
         $command = trim($this->command);
 
         // Check if it matches a custom slash command for the current user
-        $user       = Auth::user();
-        $cmdName    = ltrim(explode(' ', $command)[0], '/');
+        $user = Auth::user();
+        $cmdName = ltrim(explode(' ', $command)[0], '/');
 
         $custom = DocumentSlashCommand::where('name', $cmdName)
             ->where(function ($q) use ($user) {
@@ -159,7 +160,7 @@ class AiAssistant extends Component
                 if ($user->currentTeam) {
                     $q->orWhere(function ($q2) use ($user) {
                         $q2->where('team_id', $user->currentTeam->id)
-                           ->where('share_with_team', true);
+                            ->where('share_with_team', true);
                     });
                 }
             })
@@ -181,7 +182,7 @@ class AiAssistant extends Component
     public function dismissResult(): void
     {
         $this->showResult = false;
-        $this->result     = '';
+        $this->result = '';
     }
 
     public function render()
@@ -189,4 +190,3 @@ class AiAssistant extends Component
         return view('livewire.documents.ai-assistant');
     }
 }
-

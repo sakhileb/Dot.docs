@@ -44,16 +44,17 @@ class AiChat extends Component
 
         if (! $ai->checkRateLimit(auth()->id())) {
             $this->history[] = [
-                'role'    => 'assistant',
+                'role' => 'assistant',
                 'content' => 'Rate limit reached. You can make 20 AI requests per hour.',
             ];
             $this->message = '';
+
             return;
         }
 
         $this->history[] = ['role' => 'user', 'content' => $message];
-        $this->message   = '';
-        $this->loading   = true;
+        $this->message = '';
+        $this->loading = true;
 
         try {
             $html = $this->document->fresh()->content ?? '';
@@ -66,8 +67,8 @@ class AiChat extends Component
             $this->history[] = ['role' => 'assistant', 'content' => $reply];
         } catch (\Throwable $e) {
             $this->history[] = [
-                'role'    => 'assistant',
-                'content' => 'Error: ' . $e->getMessage(),
+                'role' => 'assistant',
+                'content' => 'Error: '.$e->getMessage(),
             ];
         } finally {
             $this->loading = false;
@@ -89,4 +90,3 @@ class AiChat extends Component
         return view('livewire.documents.ai-chat');
     }
 }
-

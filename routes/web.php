@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\EcosystemAuthController;
-
 use App\Http\Controllers\DocumentExportController;
 use App\Http\Controllers\DocumentImageController;
 use App\Http\Controllers\DocumentImportController;
@@ -11,6 +10,11 @@ use App\Livewire\Documents\Index;
 use App\Livewire\Documents\ShareManager;
 use App\Livewire\Documents\SlashCommandManager;
 use App\Livewire\Documents\VersionHistory;
+use App\Models\AiSuggestion;
+use App\Models\Document;
+use App\Models\DocumentCollaborator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Jetstream;
@@ -34,7 +38,7 @@ Route::get('/cookies', function () {
 // Public shared document view (with optional password & expiry enforcement)
 
 Route::get('/shared/{uuid}', function (string $uuid) {
-    $document = \App\Models\Document::where('uuid', $uuid)
+    $document = Document::where('uuid', $uuid)
         ->where('is_public', true)
         ->firstOrFail();
 
@@ -51,9 +55,8 @@ Route::get('/shared/{uuid}', function (string $uuid) {
     return view('documents.shared', compact('document'));
 })->name('documents.shared');
 
-
-Route::post('/shared/{uuid}', function (string $uuid, \Illuminate\Http\Request $request) {
-    $document = \App\Models\Document::where('uuid', $uuid)
+Route::post('/shared/{uuid}', function (string $uuid, Request $request) {
+    $document = Document::where('uuid', $uuid)
         ->where('is_public', true)
         ->firstOrFail();
 
@@ -63,13 +66,12 @@ Route::post('/shared/{uuid}', function (string $uuid, \Illuminate\Http\Request $
 
     $request->validate(['password' => 'required|string']);
 
-    if (! \Illuminate\Support\Facades\Hash::check($request->password, $document->share_password)) {
+    if (! Hash::check($request->password, $document->share_password)) {
         return back()->withErrors(['password' => 'Incorrect password.']);
     }
 
     return view('documents.shared', compact('document'));
 })->name('documents.shared.unlock');
-
 
 Route::middleware([
     'auth:sanctum',
@@ -78,13 +80,14 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', function () {
         $userId = auth()->id();
-        $myDocs      = \App\Models\Document::where('owner_id', $userId)->count();
-        $sharedDocs  = \App\Models\DocumentCollaborator::where('user_id', $userId)->count();
-        $publicDocs  = \App\Models\Document::where('owner_id', $userId)->where('is_public', true)->count();
-        $aiSuggestions = \App\Models\AiSuggestion::where('user_id', $userId)->whereNull('accepted_at')->count();
-        $recentDocs  = \App\Models\Document::where('owner_id', $userId)->latest()->limit(8)->get();
-        $recentShared = \App\Models\DocumentCollaborator::where('user_id', $userId)
+        $myDocs = Document::where('owner_id', $userId)->count();
+        $sharedDocs = DocumentCollaborator::where('user_id', $userId)->count();
+        $publicDocs = Document::where('owner_id', $userId)->where('is_public', true)->count();
+        $aiSuggestions = AiSuggestion::where('user_id', $userId)->whereNull('accepted_at')->count();
+        $recentDocs = Document::where('owner_id', $userId)->latest()->limit(8)->get();
+        $recentShared = DocumentCollaborator::where('user_id', $userId)
             ->with('document.owner')->latest()->limit(5)->get();
+
         return view('dashboard', compact('myDocs', 'sharedDocs', 'publicDocs', 'aiSuggestions', 'recentDocs', 'recentShared'));
     })->name('dashboard');
 

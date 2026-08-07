@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class MentionedInCommentNotification extends Notification implements ShouldQueue
 {
@@ -27,23 +28,23 @@ class MentionedInCommentNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject($this->comment->user->name . ' mentioned you in "' . $this->document->title . '"')
-            ->line($this->comment->user->name . ' mentioned you in a comment.')
-            ->line('"' . \Illuminate\Support\Str::limit($this->comment->content, 120) . '"')
+            ->subject($this->comment->user->name.' mentioned you in "'.$this->document->title.'"')
+            ->line($this->comment->user->name.' mentioned you in a comment.')
+            ->line('"'.Str::limit($this->comment->content, 120).'"')
             ->action('View Document', route('documents.edit', $this->document->uuid));
     }
 
     public function toArray(object $notifiable): array
     {
         return [
-            'type'          => 'mention',
-            'document_id'   => $this->document->id,
+            'type' => 'mention',
+            'document_id' => $this->document->id,
             'document_uuid' => $this->document->uuid,
-            'document_title'=> $this->document->title,
-            'comment_id'    => $this->comment->id,
-            'mentioner'     => $this->comment->user->name,
-            'excerpt'       => \Illuminate\Support\Str::limit($this->comment->content, 80),
-            'url'           => route('documents.edit', $this->document->uuid),
+            'document_title' => $this->document->title,
+            'comment_id' => $this->comment->id,
+            'mentioner' => $this->comment->user->name,
+            'excerpt' => Str::limit($this->comment->content, 80),
+            'url' => route('documents.edit', $this->document->uuid),
         ];
     }
 

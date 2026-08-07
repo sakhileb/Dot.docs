@@ -12,6 +12,7 @@ use Livewire\Component;
 class TemplateGallery extends Component
 {
     public bool $show = false;
+
     public string $activeCategory = 'all';
 
     #[On('open')]
@@ -63,7 +64,7 @@ class TemplateGallery extends Component
         $template = DocumentTemplate::where('id', $templateId)
             ->where(function ($q) use ($user) {
                 $q->where('is_global', true)
-                  ->orWhere('created_by', $user->id);
+                    ->orWhere('created_by', $user->id);
 
                 if ($user->currentTeam) {
                     $q->orWhere('team_id', $user->currentTeam->id);
@@ -72,12 +73,12 @@ class TemplateGallery extends Component
             ->firstOrFail();
 
         $document = Document::create([
-            'uuid'     => (string) Str::uuid(),
-            'title'    => $template->name,
-            'content'  => $template->content,
+            'uuid' => (string) Str::uuid(),
+            'title' => $template->name,
+            'content' => $template->content,
             'owner_id' => $user->id,
-            'team_id'  => $user->currentTeam?->id,
-            'version'  => 1,
+            'team_id' => $user->currentTeam?->id,
+            'version' => 1,
         ]);
 
         $this->redirect(route('documents.edit', $document->uuid), navigate: true);

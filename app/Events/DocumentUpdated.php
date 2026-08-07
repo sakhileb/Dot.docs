@@ -24,7 +24,7 @@ class DocumentUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('document.' . $this->document->id),
+            new PresenceChannel('document.'.$this->document->id),
         ];
     }
 
@@ -37,14 +37,14 @@ class DocumentUpdated implements ShouldBroadcast
     {
         return [
             'document_id' => $this->document->id,
-            'content'     => $this->content,
-            'version'     => $this->version,
-            'editor'      => [
-                'id'     => $this->editor->id,
-                'name'   => $this->editor->name,
+            'content' => $this->content,
+            'version' => $this->version,
+            'editor' => [
+                'id' => $this->editor->id,
+                'name' => $this->editor->name,
                 'avatar' => $this->editor->profile_photo_url,
             ],
-            'updated_at'  => now()->toIso8601String(),
+            'updated_at' => now()->toIso8601String(),
         ];
     }
 }
