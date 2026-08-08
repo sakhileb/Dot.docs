@@ -18,7 +18,7 @@ class WebhookService
     public function fire(Document $document, string $event, array $payload = []): void
     {
         $webhooks = DocumentWebhook::where('document_id', $document->id)
-            ->where('active', true)
+            ->where('status', 'active')
             ->get();
 
         foreach ($webhooks as $webhook) {

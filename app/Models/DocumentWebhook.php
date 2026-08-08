@@ -13,12 +13,15 @@ class DocumentWebhook extends Model
         'url',
         'events',
         'secret',
-        'active',
+        'status',
+        'rejected_reason',
+        'reviewed_by',
+        'reviewed_at',
     ];
 
     protected $casts = [
         'events' => 'array',
-        'active' => 'boolean',
+        'reviewed_at' => 'datetime',
     ];
 
     public function document(): BelongsTo
@@ -29,5 +32,10 @@ class DocumentWebhook extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 }
