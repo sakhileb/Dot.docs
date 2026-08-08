@@ -21,6 +21,12 @@ class WebhookManager extends Component
 
     public bool $generateSecret = true;
 
+    // Reject confirmation state -- one webhook at a time, mirroring the
+    // confirm-then-act pattern already used for Dot.Mines' Level 2 process.
+    public ?int $rejectingWebhookId = null;
+
+    public string $rejectReason = '';
+
     public function mount(Document $document): void
     {
         $this->document = $document;
@@ -40,7 +46,7 @@ class WebhookManager extends Component
             'url' => $this->newUrl,
             'events' => $this->newEvents ?: ['on_save', 'on_export'],
             'secret' => $this->generateSecret ? Str::random(32) : null,
-            'active' => true,
+            'status' => 'pending_approval',
         ]);
 
         $this->newUrl = '';
@@ -53,7 +59,14 @@ class WebhookManager extends Component
         $this->authorize('manage', $this->document);
 
         $webhook = DocumentWebhook::where('document_id', $this->document->id)->findOrFail($id);
-        $webhook->update(['active' => ! $webhook->active]);
+
+        if (! in_array($webhook->status, ['active', 'inactive'], true)) {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'This webhook must be approved before it can be toggled.']);
+
+            return;
+        }
+
+        $webhook->update(['status' => $webhook->status === 'active' ? 'inactive' : 'active']);
     }
 
     public function deleteWebhook(int $id): void
@@ -61,6 +74,74 @@ class WebhookManager extends Component
         $this->authorize('manage', $this->document);
 
         DocumentWebhook::where('document_id', $this->document->id)->findOrFail($id)->delete();
+    }
+
+    public function approveWebhook(int $id): void
+    {
+        $this->authorize('manage', $this->document);
+
+        $webhook = DocumentWebhook::where('document_id', $this->document->id)->findOrFail($id);
+
+        if ($webhook->status !== 'pending_approval') {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Only a pending webhook can be approved.']);
+
+            return;
+        }
+
+        $webhook->update([
+            'status' => 'active',
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ]);
+    }
+
+    public function rejectWebhook(int $id, string $reason): void
+    {
+        $this->authorize('manage', $this->document);
+
+        $webhook = DocumentWebhook::where('document_id', $this->document->id)->findOrFail($id);
+
+        if ($webhook->status !== 'pending_approval') {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Only a pending webhook can be rejected.']);
+
+            return;
+        }
+
+        if (trim($reason) === '') {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'A rejection reason is required.']);
+
+            return;
+        }
+
+        $webhook->update([
+            'status' => 'rejected',
+            'rejected_reason' => $reason,
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ]);
+    }
+
+    public function promptReject(int $id): void
+    {
+        $this->rejectingWebhookId = $id;
+        $this->rejectReason = '';
+    }
+
+    public function cancelReject(): void
+    {
+        $this->rejectingWebhookId = null;
+        $this->rejectReason = '';
+    }
+
+    public function confirmReject(): void
+    {
+        if (! $this->rejectingWebhookId) {
+            return;
+        }
+
+        $this->rejectWebhook($this->rejectingWebhookId, $this->rejectReason);
+        $this->rejectingWebhookId = null;
+        $this->rejectReason = '';
     }
 
     public function render()

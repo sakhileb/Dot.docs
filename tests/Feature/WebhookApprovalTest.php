@@ -2,13 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Documents\WebhookManager;
 use App\Models\Document;
 use App\Models\DocumentWebhook;
 use App\Models\User;
 use App\Services\WebhookService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class WebhookApprovalTest extends TestCase
@@ -77,5 +80,123 @@ class WebhookApprovalTest extends TestCase
         (new WebhookService)->fire($document, 'on_save');
 
         Http::assertSent(fn ($request) => $request->url() === 'https://example.com/hook');
+    }
+
+    public function test_add_webhook_creates_a_pending_approval_webhook(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+
+        Livewire::actingAs($owner)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->set('newUrl', 'https://example.com/hook')
+            ->call('addWebhook');
+
+        $webhook = DocumentWebhook::first();
+        $this->assertSame('pending_approval', $webhook->status);
+    }
+
+    public function test_toggle_webhook_is_a_no_op_on_a_pending_approval_webhook(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+        $webhook = DocumentWebhook::create([
+            'document_id' => $document->id,
+            'user_id' => $owner->id,
+            'url' => 'https://example.com/hook',
+            'events' => ['on_save'],
+            'status' => 'pending_approval',
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->call('toggleWebhook', $webhook->id);
+
+        $this->assertSame('pending_approval', $webhook->fresh()->status);
+    }
+
+    public function test_approve_webhook_flips_pending_to_active(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+        $webhook = DocumentWebhook::create([
+            'document_id' => $document->id,
+            'user_id' => $owner->id,
+            'url' => 'https://example.com/hook',
+            'events' => ['on_save'],
+            'status' => 'pending_approval',
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->call('approveWebhook', $webhook->id);
+
+        $fresh = $webhook->fresh();
+        $this->assertSame('active', $fresh->status);
+        $this->assertSame($owner->id, $fresh->reviewed_by);
+        $this->assertNotNull($fresh->reviewed_at);
+    }
+
+    public function test_reject_webhook_without_a_reason_is_blocked(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+        $webhook = DocumentWebhook::create([
+            'document_id' => $document->id,
+            'user_id' => $owner->id,
+            'url' => 'https://example.com/hook',
+            'events' => ['on_save'],
+            'status' => 'pending_approval',
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->set('rejectReason', '')
+            ->call('rejectWebhook', $webhook->id, '');
+
+        $this->assertSame('pending_approval', $webhook->fresh()->status);
+    }
+
+    public function test_reject_webhook_with_a_reason_marks_it_rejected(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+        $webhook = DocumentWebhook::create([
+            'document_id' => $document->id,
+            'user_id' => $owner->id,
+            'url' => 'https://example.com/hook',
+            'events' => ['on_save'],
+            'status' => 'pending_approval',
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->call('rejectWebhook', $webhook->id, 'Not needed.');
+
+        $fresh = $webhook->fresh();
+        $this->assertSame('rejected', $fresh->status);
+        $this->assertSame('Not needed.', $fresh->rejected_reason);
+        $this->assertSame($owner->id, $fresh->reviewed_by);
+    }
+
+    public function test_non_owner_non_admin_cannot_approve(): void
+    {
+        $owner = User::factory()->create();
+        $document = $this->document($owner);
+        $webhook = DocumentWebhook::create([
+            'document_id' => $document->id,
+            'user_id' => $owner->id,
+            'url' => 'https://example.com/hook',
+            'events' => ['on_save'],
+            'status' => 'pending_approval',
+        ]);
+        $stranger = User::factory()->create();
+
+        $this->withoutExceptionHandling();
+        $this->expectException(AuthorizationException::class);
+
+        Livewire::actingAs($stranger)
+            ->test(WebhookManager::class, ['document' => $document])
+            ->call('approveWebhook', $webhook->id);
     }
 }
