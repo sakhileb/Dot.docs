@@ -3,20 +3,39 @@
 namespace App\Livewire\Documents;
 
 use App\Models\Document;
+use App\Models\Folder;
+use App\Services\TagRepository;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Index extends Component
 {
+    use AuthorizesRequests;
+
     public string $search = '';
 
     public string $filter = 'all'; // all | mine | shared | team
+
+    public ?int $folderId = null;
+
+    public ?int $tagId = null;
 
     public bool $showCreateModal = false;
 
     public string $newTitle = '';
 
+    public bool $showFolderModal = false;
+
+    public string $newFolderName = '';
+
     public int $perPage = 12;
+
+    public function mount(): void
+    {
+        $this->folderId = request()->integer('folder') ?: null;
+        $this->tagId = request()->integer('tag') ?: null;
+    }
 
     public function updatingSearch(): void
     {
@@ -33,6 +52,65 @@ class Index extends Component
         $this->perPage += 12;
     }
 
+    public function openFolder(?int $folderId): void
+    {
+        $this->folderId = $folderId;
+        $this->tagId = null;
+        $this->perPage = 12;
+    }
+
+    public function filterByTag(?int $tagId): void
+    {
+        $this->tagId = $tagId;
+        $this->perPage = 12;
+    }
+
+    /**
+     * The team/personal scope the current view operates in -- folders and
+     * tags are always resolved against this, the same duality Document
+     * itself uses (a team's shared space, or the signed-in user's own).
+     */
+    private function currentTeamId(): ?int
+    {
+        return auth()->user()->currentTeam?->id;
+    }
+
+    #[Computed]
+    public function currentFolder()
+    {
+        if (! $this->folderId) {
+            return null;
+        }
+
+        $folder = Folder::find($this->folderId);
+
+        return ($folder && auth()->user()->can('view', $folder)) ? $folder : null;
+    }
+
+    #[Computed]
+    public function breadcrumbs(): array
+    {
+        return $this->currentFolder ? [...$this->currentFolder->breadcrumbs(), $this->currentFolder] : [];
+    }
+
+    #[Computed]
+    public function subfolders()
+    {
+        $teamId = $this->currentTeamId();
+
+        return Folder::where('parent_id', $this->folderId)
+            ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
+            ->when(! $teamId, fn ($q) => $q->whereNull('team_id')->where('owner_id', auth()->id()))
+            ->orderBy('name')
+            ->get();
+    }
+
+    #[Computed]
+    public function availableTags()
+    {
+        return app(TagRepository::class)->availableFor(auth()->user(), $this->currentTeamId());
+    }
+
     #[Computed]
     public function documents()
     {
@@ -47,10 +125,18 @@ class Index extends Component
                     $q->orWhere('team_id', $user->currentTeam->id);
                 }
             })
-            ->when($this->search, fn ($q) => $q->where('title', 'like', '%'.$this->search.'%'))
+            ->when($this->search, fn ($q) => $q->where(function ($q) {
+                $q->where('title', 'like', '%'.$this->search.'%')
+                    ->orWhere('content', 'like', '%'.$this->search.'%');
+            }))
             ->when($this->filter === 'mine', fn ($q) => $q->where('owner_id', $user->id))
             ->when($this->filter === 'shared', fn ($q) => $q->whereHas('collaborators', fn ($q) => $q->where('user_id', $user->id)))
             ->when($this->filter === 'team', fn ($q) => $user->currentTeam ? $q->where('team_id', $user->currentTeam->id) : $q)
+            ->when($this->tagId, fn ($q) => $q->whereHas('tags', fn ($q) => $q->where('tags.id', $this->tagId)))
+            // A search or tag filter searches the whole space, not just
+            // the current folder -- otherwise finding something means
+            // already knowing which folder it's in.
+            ->when(! $this->search && ! $this->tagId, fn ($q) => $q->where('folder_id', $this->folderId))
             ->latest()
             ->paginate($this->perPage);
     }
@@ -63,6 +149,7 @@ class Index extends Component
             'title' => $this->newTitle,
             'owner_id' => auth()->id(),
             'team_id' => auth()->user()->currentTeam?->id,
+            'folder_id' => $this->folderId,
             'version' => 1,
             'is_public' => false,
         ]);
@@ -71,6 +158,43 @@ class Index extends Component
         $this->newTitle = '';
 
         $this->redirect(route('documents.edit', $document->uuid));
+    }
+
+    public function createFolder(): void
+    {
+        $this->authorize('create', Folder::class);
+        $this->validate(['newFolderName' => 'required|string|max:255']);
+
+        Folder::create([
+            'owner_id' => auth()->id(),
+            'team_id' => $this->currentTeamId(),
+            'parent_id' => $this->folderId,
+            'name' => $this->newFolderName,
+        ]);
+
+        $this->showFolderModal = false;
+        $this->newFolderName = '';
+    }
+
+    public function renameFolder(int $folderId, string $name): void
+    {
+        $folder = Folder::findOrFail($folderId);
+        $this->authorize('update', $folder);
+
+        $name = trim($name);
+        if ($name !== '') {
+            $folder->update(['name' => $name]);
+        }
+    }
+
+    public function deleteFolder(int $folderId): void
+    {
+        $folder = Folder::findOrFail($folderId);
+        $this->authorize('delete', $folder);
+
+        // Documents inside are orphaned to the root (folder_id
+        // nullOnDelete in the migration), never deleted with the folder.
+        $folder->delete();
     }
 
     public function render()

@@ -37,6 +37,51 @@
         </form>
     </div>
 
+    {{-- Organization --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Organization</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder</label>
+            <div class="flex gap-2">
+                <select wire:model="folderId"
+                        class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">No folder (root)</option>
+                    @foreach($this->availableFolders as $folder)
+                        <option value="{{ $folder->id }}">{{ $folder->name }}</option>
+                    @endforeach
+                </select>
+                <button wire:click="moveToFolder" type="button"
+                        class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                    Move
+                </button>
+            </div>
+            @error('folderId') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags</label>
+            <div class="flex flex-wrap gap-2 mb-2">
+                @forelse($this->tags as $tag)
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-full">
+                        🏷️ {{ $tag->name }}
+                        <button wire:click="removeTag({{ $tag->id }})" class="text-indigo-400 hover:text-red-500">✕</button>
+                    </span>
+                @empty
+                    <span class="text-xs text-gray-400">No tags yet.</span>
+                @endforelse
+            </div>
+            <form wire:submit="addTag" class="flex gap-2">
+                <input wire:model="newTagName" type="text" placeholder="Add a tag…"
+                       class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                <button type="submit"
+                        class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                    Add
+                </button>
+            </form>
+        </div>
+    </div>
+
     {{-- Transfer Ownership --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Transfer Ownership</h2>
